@@ -4,6 +4,7 @@ var Game = {
     Game.init_tiles();
     Game.init_clock();
     Game.init_actions();
+    Game.reset_size();
   },
   reset: function() {
     Game.reset_stats();
@@ -22,7 +23,7 @@ var Game = {
     Game.tiles = [];
     for (var i = 0; i < 16; i++) {
       Game.tiles[i] = new Tile(i % 8);
-      Game.tiles[i].$button.appendTo($('#tiles'));
+      Game.tiles[i].$box.appendTo($('#tiles'));
     }
   },
   reset_tiles: function() {
@@ -47,6 +48,14 @@ var Game = {
     $('#start-game').click(function() {
       Game.reset();
     });
+    $(window).resize(function() {
+      Game.reset_size();
+    });
+  },
+  reset_size: function() {
+    var size = Math.min($(window).width(), $(window).height());
+    $('#window').css('width', size);
+    $('#panel').css('height', size/5);
   },
   set_clicks: function(clicks) {
     Game.clicks = clicks;
@@ -156,13 +165,14 @@ var Tile = new Class;
 Tile.include({
   init: function(id) {
     var self = this;
-    this.id = id;
-    this.$button = $('<button/>', {class: 'tile'});
-    this.$image = $('<img/>', {src: 'images/' + (id + 1) + '.png'});
-    this.$image.appendTo(this.$button);
+    this.$box = $('<div/>', {class: 'box'});
+    this.$square = $('<div/>', {class: 'square'}).appendTo(this.$box);
+    this.$button = $('<button/>', {class: 'tile'}).appendTo(this.$square);
+    this.$image = $('<img/>').appendTo(this.$button);
     this.$button.click(function() {
       Game.click_tile(self);
     });
+    this.set_id(id);
     this.reset();
   },
   reset: function() {

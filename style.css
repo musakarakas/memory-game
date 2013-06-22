@@ -1,17 +1,29 @@
-#tiles {
-  width: 400px;
+#window {
   margin: auto;
 }
 
-.tile {
-  width: 100px;
-  height: 100px;
+#tiles {
+  width: 80%;
+  margin: auto;
+  overflow: auto;
 }
 
-#panel * {
-  text-align: center;
+#tiles .box {
+  position: relative;
+  width: 25%;
+  float: left;
 }
 
-#panel * * {
-  display: inline-block;
+/* Preserve aspect-ratio of the tiles */
+#tiles .box .square { padding-bottom: 100%; }
+#tiles .box .square .tile, #tiles .box .square .tile img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
 }
+
+/* Center panel buttons */
+#panel { text-align: center; }
+#panel button { width: 40%; height: 40%; }
+#panel button#start-game { width: 80%; height: 40%; }
