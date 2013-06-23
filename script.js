@@ -4,7 +4,7 @@ var Game = {
     Game.init_tiles();
     Game.init_clock();
     Game.init_actions();
-    Game.reset_size();
+    Game.set_size();
   },
   reset: function() {
     Game.reset_stats();
@@ -18,6 +18,7 @@ var Game = {
   reset_stats: function() {
     Game.set_clicks(0);
     Game.set_time(0);
+    Game.is_over = false;
   },
   init_tiles: function() {
     Game.tiles = [];
@@ -49,13 +50,13 @@ var Game = {
       Game.reset();
     });
     $(window).resize(function() {
-      Game.reset_size();
+      Game.set_size();
     });
   },
-  reset_size: function() {
+  set_size: function() {
     var size = Math.min($(window).width(), $(window).height());
     $('#window').css('width', size);
-    $('#panel').css('height', size/5);
+    $('#panel').css('height', size / 5);
   },
   set_clicks: function(clicks) {
     Game.clicks = clicks;
@@ -83,6 +84,7 @@ var Game = {
   end_game: function(win) {
     clearInterval(Game.clock);
     Game.disable_tiles();
+    Game.is_over = true;
     var winner = "Congratulations! You WIN!\nNumber of clicks: " + Game.clicks
             + "\nGame was completed in " + Game.time + " seconds.";
     var loser = "Time is up!\nYou LOSE!\nNumber of clicks: " + Game.clicks;
@@ -107,7 +109,10 @@ var Game = {
     }
     function delay() {
       Game.disable_tiles();
-      setTimeout(Game.repaint_tiles, 300);
+      setTimeout(function() {
+        if (!Game.is_over)
+          Game.repaint_tiles();
+      }, 300);
     }
   },
   disable_tiles: function() {
