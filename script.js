@@ -24,7 +24,7 @@ var Game = {
     Game.tiles = [];
     for (var i = 0; i < 16; i++) {
       Game.tiles[i] = new Tile(i % 8);
-      Game.tiles[i].$box.appendTo($('#tiles'));
+      Game.tiles[i].$button.appendTo($('#tiles'));
     }
   },
   reset_tiles: function() {
@@ -54,9 +54,30 @@ var Game = {
     });
   },
   set_size: function() {
-    var size = Math.min($(window).width(), $(window).height());
-    $('#window').css('width', size);
-    $('#panel').css('height', size / 5);
+    var w = $(window).width(), h = $(window).height(), size;
+    w > h ? set_wide_size() : set_narrow_size();
+    set_font_size();
+
+    function set_wide_size() {
+      size = Math.min(w * 4 / 5, h);
+      $('#window').css({'width': size * 5 / 4, 'height': size});
+      $('#window').removeClass('narrow');
+      $('#window').addClass('wide');
+    }
+
+    function set_narrow_size() {
+      size = Math.min(w, h * 4 / 5);
+      $('#window').css({'width': size, 'height': size * 5 / 4});
+      $('#window').removeClass('wide');
+      $('#window').addClass('narrow');
+    }
+
+    function set_font_size() {
+      var font_size = Math.floor(size / 5) + '%';
+      $('body').css('font-size', font_size);
+      $('body').css('line-height', $('body').css('font-size'));
+      console.log(font_size);
+    }
   },
   set_clicks: function(clicks) {
     Game.clicks = clicks;
@@ -85,9 +106,9 @@ var Game = {
     clearInterval(Game.clock);
     Game.disable_tiles();
     Game.is_over = true;
-    var winner = "Congratulations! You WIN!\nNumber of clicks: " + Game.clicks
+    var winner = "Congratulations! You win!\nNumber of clicks: " + Game.clicks
             + "\nGame was completed in " + Game.time + " seconds.";
-    var loser = "Time is up!\nYou LOSE!\nNumber of clicks: " + Game.clicks;
+    var loser = "Time is up!\nYou lose!\nNumber of clicks: " + Game.clicks;
     alert(win ? winner : loser);
   },
   click_tile: function(tile) {
@@ -170,9 +191,7 @@ var Tile = new Class;
 Tile.include({
   init: function(id) {
     var self = this;
-    this.$box = $('<div/>', {class: 'box'});
-    this.$square = $('<div/>', {class: 'square'}).appendTo(this.$box);
-    this.$button = $('<button/>', {class: 'tile'}).appendTo(this.$square);
+    this.$button = $('<button/>', {class: 'tile'});
     this.$image = $('<img/>').appendTo(this.$button);
     this.$button.click(function() {
       Game.click_tile(self);

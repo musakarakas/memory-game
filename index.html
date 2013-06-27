@@ -13,9 +13,18 @@
     <div id="window">
       <div id="tiles"></div>
       <div id="panel">
-        <button id="start-game">Start New Game</button>
-        <button disabled="disabled"><span id="seconds-left">0</span> seconds left.</button>
-        <button disabled="disabled"><span id="clicks">0</span> clicks.</button>
+        <div id="stats">
+          <div>Time:<br/><span id="seconds-left">0</span> seconds</div>
+          <div>Clicks: <span id="clicks">0</span></div>
+          <div>Score: <span id="score">0</span></div>
+        </div>
+        <div id="options">
+          <div>4x4</div>
+          <div>English</div>
+        </div>
+        <div id="controls">
+          <button id="start-game">Start New Game</button>
+        </div>
       </div>
     </div>
   </body>

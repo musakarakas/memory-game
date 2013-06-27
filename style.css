@@ -1,29 +1,90 @@
 #window {
   margin: auto;
-}
-
-#tiles {
-  width: 80%;
-  margin: auto;
   overflow: auto;
 }
 
-#tiles .box {
+.wide #tiles {
+  width: 80%;
+  height: 100%;
+  float: left;
+}
+.narrow #tiles {
+  width: 100%;
+  height: 80%;
+}
+
+#tiles button {
   position: relative;
   width: 25%;
+  height: 25%;
   float: left;
 }
 
-/* Preserve aspect-ratio of the tiles */
-#tiles .box .square { padding-bottom: 100%; }
-#tiles .box .square .tile, #tiles .box .square .tile img {
+#tiles button img {
   position: absolute;
-  top: 0; left: 0;
+  top: 0; right: 0; bottom: 0; left: 0;
   width: 100%;
   height: 100%;
 }
 
-/* Center panel buttons */
-#panel { text-align: center; }
-#panel button { width: 40%; height: 40%; }
-#panel button#start-game { width: 80%; height: 40%; }
+#panel {
+  position: relative;
+}
+
+.wide #panel {
+  width: 20%;
+  height: 100%;
+  float: left;
+}
+.narrow #panel {
+  width: 100%;
+  height: 20%;
+}
+
+.wide #panel button {
+  position: absolute;
+  width: 100%;
+  height: 25%;
+  top: 75%;
+}
+.narrow #panel button {
+  position: absolute;
+  height: 100%;
+  width: 25%;
+  left: 75%;
+}
+
+.wide #panel>div {
+  width: 100%;
+  height: 30%;
+}
+.narrow #panel>div {
+  width: 25%;
+  height: 100%;
+  float: left;
+}
+
+#panel div div {
+  border: 1px solid green;
+  background: greenyellow;
+  color: blue;
+  margin: 2px;
+}
+.wide #panel div div {
+  height: 30%;
+}
+.narrow #panel div div {
+  width: 90%;
+  float: left;
+}
+
+#panel div span {
+  color: red;
+  font-weight: bold;
+}
+
+#controls button {
+  font-size: 1em;
+  line-height: 1em;
+  padding: 0;
+}
