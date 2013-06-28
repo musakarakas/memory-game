@@ -5,11 +5,7 @@ var Game = {
     Game.init_tiles();
     Game.init_clock();
     Game.init_actions();
-    Game.set_size();
-  },
-  start: function() {
-    Game.reset();
-    $('#level').attr('disabled', 'disabled');
+    View.resize();
   },
   reset: function() {
     Game.reset_stats();
@@ -27,21 +23,17 @@ var Game = {
   reset_stats: function() {
     Game.set_clicks(0);
     Game.set_time(0);
-    Game.is_over = false;
+    Game.is_over = true;
   },
   init_tiles: function() {
-    $('#tiles').empty(), Game.tiles = [];
+    Game.tiles = [];
     tile_count = Math.pow(Game.level, 2) - (Game.level % 2);
-    for (var i = 0; i < tile_count; i++) {
+    for (var i = 0; i < tile_count; i++)
       Game.tiles[i] = new Tile(i % (tile_count / 2));
-      Game.tiles[i].$button.appendTo($('#tiles'));
-    }
-    var tile_size = (100 / Game.level) + '%';
-    $('#tiles button').css({'width': tile_size, 'height': tile_size});
+    View.draw_tiles();
   },
   next_level: function() {
     Game.level = (Game.level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
-    $('#level').text(Game.level + ' x ' + Game.level); // FIXME: View.reload()?
     Game.init_tiles();
   },
   reset_tiles: function() {
@@ -64,50 +56,28 @@ var Game = {
   },
   init_actions: function() {
     $('#start-game').click(function() {
-      Game.start();
+      Game.reset();
+      Game.is_over = false;
+      View.repaint();
     });
     $('#end-game').click(function() {
       Game.end_game();
     });
     $('#level').click(function() {
       Game.next_level();
+      View.repaint();
     });
     $(window).resize(function() {
-      Game.set_size();
+      View.resize();
     });
-  },
-  set_size: function() {
-    var w = $(window).width(), h = $(window).height(), size;
-    w > h ? set_wide_size() : set_narrow_size();
-    set_font_size();
-
-    function set_wide_size() {
-      size = Math.min(w * 4 / 5, h);
-      $('#window').css({'width': size * 5 / 4, 'height': size});
-      $('#window').removeClass('narrow');
-      $('#window').addClass('wide');
-    }
-
-    function set_narrow_size() {
-      size = Math.min(w, h * 4 / 5);
-      $('#window').css({'width': size, 'height': size * 5 / 4});
-      $('#window').removeClass('wide');
-      $('#window').addClass('narrow');
-    }
-
-    function set_font_size() {
-      var font_size = Math.floor(size / 5) + '%';
-      $('body').css('font-size', font_size);
-      $('body').css('line-height', $('body').css('font-size'));
-    }
   },
   set_clicks: function(clicks) {
     Game.clicks = clicks;
-    $('#clicks').text(Game.clicks);
+    View.set_clicks();
   },
   set_time: function(time) {
     Game.time = time;
-    $('#seconds-left').text(Game.MAX_TIME - Game.time);
+    View.set_time();
   },
   shuffle_tiles: function() {
     for (var i = 0; i < Game.tiles.length; i++)
@@ -130,8 +100,7 @@ var Game = {
     Game.is_over = true;
     if (arguments.length)
       show_message();
-    $('#level').removeAttr('disabled');
-
+    View.repaint();
     function show_message() {
       var winner = "Congratulations! You win!\nNumber of clicks: " + Game.clicks
               + "\nGame was completed in " + Game.time + " seconds.";
@@ -178,20 +147,59 @@ var Game = {
   }
 };
 
+var View = {
+  draw_tiles: function() {
+    $('#tiles').empty();
+    for (var i = 0; i < Game.tiles.length; i++)
+      Game.tiles[i].$button.appendTo($('#tiles'));
+    var tile_size = (100 / Game.level) + '%';
+    $('#tiles button').css({'width': tile_size, 'height': tile_size});
+  },
+  repaint: function() {
+    var $level = $('#level');
+    Game.is_over ? Utils.enable_button($level) : Utils.disable_button($level);
+    $level.text(Game.level + ' x ' + Game.level);
+  },
+  resize: function() {
+    var w = $(window).width(), h = $(window).height(), size;
+    w > h ? set_wide_size() : set_narrow_size();
+    set_font_size();
+    function set_wide_size() {
+      size = Math.min(w * 4 / 5, h);
+      $('#window').css({'width': size * 5 / 4, 'height': size});
+      $('#window').removeClass('narrow');
+      $('#window').addClass('wide');
+    }
+    function set_narrow_size() {
+      size = Math.min(w, h * 4 / 5);
+      $('#window').css({'width': size, 'height': size * 5 / 4});
+      $('#window').removeClass('wide');
+      $('#window').addClass('narrow');
+    }
+    function set_font_size() {
+      var font_size = Math.floor(size / 5) + '%';
+      $('body').css('font-size', font_size);
+      $('body').css('line-height', $('body').css('font-size'));
+    }
+  },
+  set_clicks: function() {
+    $('#clicks').text(Game.clicks);
+  },
+  set_time: function() {
+    $('#seconds-left').text(Game.MAX_TIME - Game.time);
+  }
+};
+
 var Class = function() {
   var klass = function() {
     this.init.apply(this, arguments);
   };
-
   klass.prototype.init = function() {
   };
-
   // Shortcut to access prototype
   klass.fn = klass.prototype;
-
   // Shortcut to access class
   klass.fn.parent = klass;
-
   // Adding class properties
   klass.extend = function(obj) {
     var extended = obj.extended;
@@ -201,7 +209,6 @@ var Class = function() {
     if (extended)
       extended(klass);
   };
-
   // Adding instance properties
   klass.include = function(obj) {
     var included = obj.included;
@@ -211,7 +218,6 @@ var Class = function() {
     if (included)
       included(klass);
   };
-
   return klass;
 };
 
@@ -238,16 +244,24 @@ Tile.include({
   },
   hide: function() {
     this.$image.hide();
-    this.$button.removeAttr('disabled');
+    Utils.enable_button(this.$button);
   },
   disable: function() {
-    this.$button.attr('disabled', 'disabled');
-  },
-  set_id: function(id) {
+    Utils.disable_button(this.$button);
+  }, set_id: function(id) {
     this.id = id;
     this.$image.attr('src', 'images/' + (id + 1) + '.png');
   }
 });
+
+var Utils = {
+  enable_button: function($button) {
+    $button.removeAttr('disabled');
+  },
+  disable_button: function($button) {
+    $button.attr('disabled', 'disabled');
+  }
+};
 
 $(function() {
   Game.init();
