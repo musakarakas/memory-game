@@ -1,15 +1,24 @@
 var Game = {
   init: function() {
+    Game.init_options();
     Game.init_stats();
     Game.init_tiles();
     Game.init_clock();
     Game.init_actions();
     Game.set_size();
   },
+  start: function() {
+    Game.reset();
+    $('#level').attr('disabled', 'disabled');
+  },
   reset: function() {
     Game.reset_stats();
     Game.reset_tiles();
     Game.reset_clock();
+  },
+  init_options: function() {
+    Game.level = 4;
+    Game.language = 'en';
   },
   init_stats: function() {
     Game.MAX_TIME = 60;
@@ -21,11 +30,19 @@ var Game = {
     Game.is_over = false;
   },
   init_tiles: function() {
-    Game.tiles = [];
-    for (var i = 0; i < 16; i++) {
-      Game.tiles[i] = new Tile(i % 8);
+    $('#tiles').empty(), Game.tiles = [];
+    tile_count = Math.pow(Game.level, 2) - (Game.level % 2);
+    for (var i = 0; i < tile_count; i++) {
+      Game.tiles[i] = new Tile(i % (tile_count / 2));
       Game.tiles[i].$button.appendTo($('#tiles'));
     }
+    var tile_size = (100 / Game.level) + '%';
+    $('#tiles button').css({'width': tile_size, 'height': tile_size});
+  },
+  next_level: function() {
+    Game.level = (Game.level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
+    $('#level').text(Game.level + ' x ' + Game.level); // FIXME: View.reload()?
+    Game.init_tiles();
   },
   reset_tiles: function() {
     for (var i = 0; i < Game.tiles.length; i++)
@@ -47,7 +64,13 @@ var Game = {
   },
   init_actions: function() {
     $('#start-game').click(function() {
-      Game.reset();
+      Game.start();
+    });
+    $('#end-game').click(function() {
+      Game.end_game();
+    });
+    $('#level').click(function() {
+      Game.next_level();
     });
     $(window).resize(function() {
       Game.set_size();
@@ -76,7 +99,6 @@ var Game = {
       var font_size = Math.floor(size / 5) + '%';
       $('body').css('font-size', font_size);
       $('body').css('line-height', $('body').css('font-size'));
-      console.log(font_size);
     }
   },
   set_clicks: function(clicks) {
@@ -106,10 +128,16 @@ var Game = {
     clearInterval(Game.clock);
     Game.disable_tiles();
     Game.is_over = true;
-    var winner = "Congratulations! You win!\nNumber of clicks: " + Game.clicks
-            + "\nGame was completed in " + Game.time + " seconds.";
-    var loser = "Time is up!\nYou lose!\nNumber of clicks: " + Game.clicks;
-    alert(win ? winner : loser);
+    if (arguments.length)
+      show_message();
+    $('#level').removeAttr('disabled');
+
+    function show_message() {
+      var winner = "Congratulations! You win!\nNumber of clicks: " + Game.clicks
+              + "\nGame was completed in " + Game.time + " seconds.";
+      var loser = "Time is up!\nYou lose!\nNumber of clicks: " + Game.clicks;
+      alert(win ? winner : loser);
+    }
   },
   click_tile: function(tile) {
     Game.set_clicks(Game.clicks + 1);

@@ -17,7 +17,6 @@
   position: relative;
   width: 25%;
   height: 25%;
-  float: left;
 }
 
 #tiles button img {
@@ -41,18 +40,19 @@
   height: 20%;
 }
 
-.wide #panel button {
-  position: absolute;
-  width: 100%;
-  height: 25%;
-  top: 75%;
+#panel button { width: 100%; height: 25%; }
+
+#panel button {
+  font-size: 1em;
+  line-height: 1em;
+  padding: 0;
 }
-.narrow #panel button {
-  position: absolute;
-  height: 100%;
-  width: 25%;
-  left: 75%;
-}
+.wide #controls button { position: absolute; width: 100%; height: 25%; }
+.narrow #controls button { position: absolute; width: 25%; height: 100%; }
+.wide #controls button#start-game { top: 50%; }
+.narrow #controls button#start-game { left: 50%; }
+.wide #controls button#end-game { top: 75%; }
+.narrow #controls button#end-game { left: 75%; }
 
 .wide #panel>div {
   width: 100%;
@@ -64,7 +64,7 @@
   float: left;
 }
 
-#panel div div {
+#panel #stats div {
   border: 1px solid green;
   background: greenyellow;
   color: blue;
@@ -81,10 +81,4 @@
 #panel div span {
   color: red;
   font-weight: bold;
-}
-
-#controls button {
-  font-size: 1em;
-  line-height: 1em;
-  padding: 0;
 }
