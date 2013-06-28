@@ -17,10 +17,10 @@ var Game = {
     Game.language = 'en';
   },
   init_stats: function() {
-    Game.MAX_TIME = 60;
     Game.reset_stats();
   },
   reset_stats: function() {
+    Game.max_time = Math.pow(Game.level, 2) * 4;
     Game.set_clicks(0);
     Game.set_time(0);
     Game.is_over = true;
@@ -35,6 +35,7 @@ var Game = {
   next_level: function() {
     Game.level = (Game.level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
     Game.init_tiles();
+    Game.reset_stats();
   },
   reset_tiles: function() {
     for (var i = 0; i < Game.tiles.length; i++)
@@ -50,7 +51,7 @@ var Game = {
     Game.clock = setInterval(tick, 1000);
     function tick() {
       Game.set_time(Game.time + 1);
-      if (Game.time >= Game.MAX_TIME)
+      if (Game.time >= Game.max_time)
         Game.end_game(false);
     }
   },
@@ -159,6 +160,7 @@ var View = {
     var $level = $('#level');
     Game.is_over ? Utils.enable_button($level) : Utils.disable_button($level);
     $level.text(Game.level + ' x ' + Game.level);
+    this.set_time();
   },
   resize: function() {
     var w = $(window).width(), h = $(window).height(), size;
@@ -186,7 +188,7 @@ var View = {
     $('#clicks').text(Game.clicks);
   },
   set_time: function() {
-    $('#seconds-left').text(Game.MAX_TIME - Game.time);
+    $('#seconds-left').text(Game.max_time - Game.time);
   }
 };
 
