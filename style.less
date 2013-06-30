@@ -1,86 +1,56 @@
 @import "lib/less/bootstrap.less";
 
-#window {
-  margin: auto;
-  overflow: auto;
-}
-
-.wide #tiles {
-  width: 80%;
-  height: 100%;
-  float: left;
-}
-.narrow #tiles {
-  width: 100%;
-  height: 80%;
-}
+#window { margin: auto; overflow: auto; }
 
 #tiles button {
-  position: relative;
-  width: 25%;
-  height: 25%;
-}
-
-#tiles button img {
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  width: 100%;
-  height: 100%;
+  position: relative; width: 25%; height: 25%;
+  img {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+    width: 100%; height: 100%;
+  }
 }
 
 #panel {
   position: relative;
+  button {
+    width: 100%; height: 25%; font-size: 1em; line-height: 1em; padding: 0;
+  }
+  #stats div {
+    border: 1px solid green; margin: 2px; background: greenyellow; color: blue;
+  }
+  div span { color: red; font-weight: bold; }
 }
 
-.wide #panel {
-  width: 20%;
-  height: 100%;
-  float: left;
-}
-.narrow #panel {
-  width: 100%;
-  height: 20%;
-}
-
-#panel button { width: 100%; height: 25%; }
-
-#panel button {
-  font-size: 1em;
-  line-height: 1em;
-  padding: 0;
-}
-.wide #controls button { position: absolute; width: 100%; height: 25%; }
-.narrow #controls button { position: absolute; width: 25%; height: 100%; }
-.wide #controls button#start-game { top: 50%; }
-.narrow #controls button#start-game { left: 50%; }
-.wide #controls button#end-game { top: 75%; }
-.narrow #controls button#end-game { left: 75%; }
-
-.wide #panel>div {
-  width: 100%;
-  height: 30%;
-}
-.narrow #panel>div {
-  width: 25%;
-  height: 100%;
-  float: left;
+.wide {
+  #tiles { width: 80%; height: 100%; float: left; }
+  #panel {
+    width: 20%; height: 100%; float: left;
+    &>div {
+      width: 100%; height: 30%;
+      div { height: 30%; }
+    }
+  }
+  #controls {
+    button {
+      position: absolute; width: 100%; height: 25%;
+      &#start-game { top: 50%; }
+      &#end-game { top: 75%; }
+    }
+  }
 }
 
-#panel #stats div {
-  border: 1px solid green;
-  background: greenyellow;
-  color: blue;
-  margin: 2px;
-}
-.wide #panel div div {
-  height: 30%;
-}
-.narrow #panel div div {
-  width: 90%;
-  float: left;
-}
-
-#panel div span {
-  color: red;
-  font-weight: bold;
+.narrow {
+  #tiles { width: 100%; height: 80%; }
+  #panel {
+    width: 100%; height: 20%;
+    &>div {
+      width: 25%; height: 100%; float: left;
+      div { width: 90%; float: left; }
+    }
+  }
+  #controls button {
+    position: absolute; width: 25%; height: 100%;
+    &#start-game { left: 50%; }
+    &#end-game { left: 75%; }
+  }
 }
