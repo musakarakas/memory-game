@@ -23,13 +23,14 @@ var Game = {
     Game.max_time = Math.pow(Game.level, 2) * 4;
     Game.set_clicks(0);
     Game.set_time(0);
+    Game.matches_found = 0;
     Game.is_over = true;
   },
   init_tiles: function() {
     Game.tiles = [];
-    tile_count = Math.pow(Game.level, 2) - (Game.level % 2);
-    for (var i = 0; i < tile_count; i++)
-      Game.tiles[i] = new Tile(i % (tile_count / 2));
+    Game.tile_count = Math.pow(Game.level, 2) - (Game.level % 2);
+    for (var i = 0; i < Game.tile_count; i++)
+      Game.tiles[i] = new Tile(i % (Game.tile_count / 2));
     View.draw_tiles();
   },
   next_level: function() {
@@ -62,7 +63,8 @@ var Game = {
       View.repaint();
     });
     $('#end-game').click(function() {
-      Game.end_game();
+      if (!Game.matches_found || window.confirm("Are you sure?"))
+        Game.end_game();
     });
     $('#level').click(function() {
       Game.next_level();
@@ -90,10 +92,7 @@ var Game = {
     }
   },
   all_matches_found: function() {
-    for (var i = 0; i < Game.tiles.length; i++)
-      if (!Game.tiles[i].matched)
-        return false;
-    return true;
+    return Game.matches_found === Game.tile_count / 2;
   },
   end_game: function(win) {
     clearInterval(Game.clock);
@@ -124,6 +123,7 @@ var Game = {
       delay();
     }
     function match_found() {
+      Game.matches_found++;
       Game.tile_to_match.matched = tile.matched = true;
       if (Game.all_matches_found())
         Game.end_game(true);
@@ -209,7 +209,7 @@ var View = {
       $('#start-game').hide();
       $('#end-game').show();
     }
-  },
+  }
 };
 
 var Class = function() {
