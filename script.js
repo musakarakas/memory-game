@@ -173,14 +173,20 @@ var View = {
     w > h ? set_wide_size() : set_narrow_size();
     set_font_size();
     function set_wide_size() {
-      size = Math.min(w * 4 / 5, h);
-      $('#window').css({'width': size * 5 / 4, 'height': size});
+      size = Math.min(w * 4 / 5, h) * .99;
+      $('#window').css({
+        'width': size * 5 / 4, 'height': size,
+        'margin-top': (h - size) / 2
+      });
       $('#window').removeClass('narrow');
       $('#window').addClass('wide');
     }
     function set_narrow_size() {
-      size = Math.min(w, h * 4 / 5);
-      $('#window').css({'width': size, 'height': size * 5 / 4});
+      size = Math.min(w, h * 4 / 5) * .99;
+      $('#window').css({
+        'width': size, 'height': size * 5 / 4,
+        'margin-top': (h - size * 5 / 4) / 2
+      });
       $('#window').removeClass('wide');
       $('#window').addClass('narrow');
     }
