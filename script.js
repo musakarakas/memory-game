@@ -111,27 +111,21 @@ var Game = {
   },
   click_tile: function(tile) {
     Game.set_clicks(Game.clicks + 1);
-    tile.show();
     Game.clicks % 2 === 1 ? first_click() : second_click();
     function first_click() {
+      Game.repaint_tiles();
+      tile.show();
       Game.tile_to_match = tile;
     }
     function second_click() {
+      tile.show();
       if (tile.id === Game.tile_to_match.id)
         match_found();
-      delay();
     }
     function match_found() {
       Game.tile_to_match.matched = tile.matched = true;
       if (Game.all_matches_found())
         Game.end_game(true);
-    }
-    function delay() {
-      Game.disable_tiles();
-      setTimeout(function() {
-        if (!Game.is_over)
-          Game.repaint_tiles();
-      }, 300);
     }
   },
   disable_tiles: function() {
