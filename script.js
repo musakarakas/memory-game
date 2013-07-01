@@ -120,7 +120,8 @@ var Game = {
       tile.show();
       if (tile.id === Game.tile_to_match.id)
         match_found();
-      delay();
+      else
+        hide(Game.tile_to_match, tile);
     }
     function match_found() {
       Game.matches_found++;
@@ -128,9 +129,10 @@ var Game = {
       if (Game.all_matches_found())
         Game.end_game(true);
     }
-    function delay() {
+    function hide(first_tile, second_tile) {
       setTimeout(function() {
-        Game.repaint_tiles();
+        first_tile.hide();
+        second_tile.hide();
       }, 300);
     }
   },
