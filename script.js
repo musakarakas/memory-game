@@ -5,7 +5,7 @@ var Game = {
     Game.init_tiles();
     Game.init_clock();
     Game.init_actions();
-    View.resize();
+    View.repaint();
   },
   reset: function() {
     Game.reset_stats();
@@ -121,11 +121,17 @@ var Game = {
       tile.show();
       if (tile.id === Game.tile_to_match.id)
         match_found();
+      delay();
     }
     function match_found() {
       Game.tile_to_match.matched = tile.matched = true;
       if (Game.all_matches_found())
         Game.end_game(true);
+    }
+    function delay() {
+      setTimeout(function() {
+        Game.repaint_tiles();
+      }, 300);
     }
   },
   disable_tiles: function() {
@@ -139,6 +145,8 @@ var Game = {
       else
         Game.tiles[i].hide();
     }
+    if (Game.is_over)
+      Game.disable_tiles();
   }
 };
 
@@ -151,10 +159,14 @@ var View = {
     $('#tiles button').css({'width': tile_size, 'height': tile_size});
   },
   repaint: function() {
-    var $level = $('#level');
-    Game.is_over ? Utils.enable_button($level) : Utils.disable_button($level);
-    $level.text(Game.level + ' x ' + Game.level);
-    this.set_time();
+    View.resize();
+    View.repaint_stats();
+    Game.repaint_tiles();
+  },
+  repaint_stats: function() {
+    View.set_time();
+    View.set_level();
+    View.set_start();
   },
   resize: function() {
     var w = $(window).width(), h = $(window).height(), size;
@@ -183,7 +195,21 @@ var View = {
   },
   set_time: function() {
     $('#seconds-left').text(Game.max_time - Game.time);
-  }
+  },
+  set_level: function() {
+    var $level = $('#level');
+    Game.is_over ? Utils.enable_button($level) : Utils.disable_button($level);
+    $level.text(Game.level + ' x ' + Game.level);
+  },
+  set_start: function() {
+    if (Game.is_over) {
+      $('#start-game').show();
+      $('#end-game').hide();
+    } else {
+      $('#start-game').hide();
+      $('#end-game').show();
+    }
+  },
 };
 
 var Class = function() {
@@ -244,7 +270,8 @@ Tile.include({
   },
   disable: function() {
     Utils.disable_button(this.$button);
-  }, set_id: function(id) {
+  },
+  set_id: function(id) {
     this.id = id;
     this.$image.attr('src', 'images/' + (id + 1) + '.png');
   }

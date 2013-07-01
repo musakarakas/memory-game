@@ -15,21 +15,26 @@
       }
       span { color: red; font-weight: bold; }
     }
-    #controls { button { position: absolute; } }
   }
 }
 
 #window.wide {
-  #tiles { .size(100%,80%); float: left; }
+  & > * { float:left; }
+  #tiles { .size(100%,80%); }
   #panel {
-    .size(100%,20%); float: left;
-    & > div { .size(25%,100%); }
+    .size(100%,20%);
+    & > div, button { width: 100%; }
+    #stats {
+      height: 25%;
+      div { height: 25%; }
+    }
+    #options {
+      height: 50%;
+      button { height: 50%; }
+    }
     #controls {
-      button {
-        .size(25%,100%);
-        &#start-game { top: 50%; }
-        &#end-game { top: 75%; }
-      }
+      height: 25%;
+      button { height: 100%; }
     }
   }
 }
@@ -38,13 +43,18 @@
   #tiles { .size(80%,100%); }
   #panel {
     .size(20%,100%);
-    & > div { .size(100%,25%); float: left; }
+    & > div, button { height: 100%; float: left; }
+    #stats {
+      width: 25%;
+      div { height: 25%; }
+    }
+    #options {
+      width: 50%;
+      button { width: 50%; }
+    }
     #controls {
-      button {
-        .size(100%,25%);
-        &#start-game { left: 50%; }
-        &#end-game { left: 75%; }
-      }
+      width: 25%;
+      button { width: 100%; }
     }
   }
 }
