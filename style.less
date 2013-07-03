@@ -3,16 +3,12 @@
 #window {
   margin: auto;
   #panel {
-    button {
-      .size(25%, 100%);
-      font-size: 1em; line-height: 1em; padding: 0;
-    }
+    button { font-size: 1em; line-height: 1em; }
     #stats {
       div {
-        border: 1px solid green; margin: 2px;
-        background: greenyellow; color: blue;
+        height: 28%; margin: 2%;
+        border: 1px solid green; background: greenyellow; color: blue;
       }
-      span { color: red; font-weight: bold; }
     }
   }
 }
@@ -22,19 +18,7 @@
   #tiles { .size(100%, 80%); }
   #panel {
     .size(100%, 20%);
-    & > div, button { width: 100%; }
-    #stats {
-      height: 25%;
-      div { height: 25%; }
-    }
-    #options {
-      height: 50%;
-      button { height: 50%; }
-    }
-    #controls {
-      height: 25%;
-      button { height: 100%; }
-    }
+    & > * { .size(23%, 92%); margin: 4%; }
   }
 }
 
@@ -42,18 +26,6 @@
   #tiles { .size(80%, 100%); }
   #panel {
     .size(20%, 100%);
-    & > div, button { height: 100%; float: left; }
-    #stats {
-      width: 25%;
-      div { height: 25%; }
-    }
-    #options {
-      width: 50%;
-      button { width: 50%; }
-    }
-    #controls {
-      width: 25%;
-      button { width: 100%; }
-    }
+    & > * { .size(92%, 23%); margin: 1%; float: left; }
   }
 }
