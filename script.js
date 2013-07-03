@@ -5,7 +5,18 @@ var Game = {
     Game.init_tiles();
     Game.init_clock();
     Game.init_actions();
+    Game.internationalize();
     View.repaint();
+  },
+  internationalize: function(lng) {
+    var options = {
+      lng: lng || 'en',
+      fallbackLng: 'en',
+      postProcess: 'sprintf'
+    };
+    i18n.init(options, function() {
+      $('body').i18n();
+    });
   },
   reset: function() {
     Game.reset_stats();
@@ -20,7 +31,6 @@ var Game = {
     Game.reset_stats();
   },
   reset_stats: function() {
-    Game.max_time = Math.pow(Game.level, 2) * 4;
     Game.set_clicks(0);
     Game.set_time(0);
     Game.matches_found = 0;
@@ -29,6 +39,7 @@ var Game = {
   init_tiles: function() {
     Game.tiles = [];
     Game.tile_count = Math.pow(Game.level, 2) - (Game.level % 2);
+    Game.max_time = Game.tile_count * 4;
     for (var i = 0; i < Game.tile_count; i++)
       Game.tiles[i] = new Tile(i % (Game.tile_count / 2));
     View.draw_tiles();
@@ -63,12 +74,15 @@ var Game = {
       View.repaint();
     });
     $('#end-game').click(function() {
-      if (!Game.matches_found || window.confirm("Are you sure?"))
+      if (!Game.matches_found || window.confirm(i18n.t('are-you-sure')))
         Game.end_game();
     });
     $('#level').click(function() {
       Game.next_level();
       View.repaint();
+    });
+    $('#language').click(function() {
+      Game.internationalize(i18n.lng() === 'tr' ? 'en' : 'tr');
     });
     $(window).resize(function() {
       View.resize();
@@ -102,10 +116,8 @@ var Game = {
       show_message();
     View.repaint();
     function show_message() {
-      var winner = "Congratulations! You win!\nNumber of clicks: " + Game.clicks
-              + "\nGame was completed in " + Game.time + " seconds.";
-      var loser = "Time is up!\nYou lose!\nNumber of clicks: " + Game.clicks;
-      alert(win ? winner : loser);
+      var params = {sprintf: [Game.clicks, Game.time]};
+      alert(i18n.t(win ? 'you-win' : 'you-lose', params));
     }
   },
   click_tile: function(tile) {

@@ -1,0 +1,14 @@
+{
+  "start-game": "Start New Game",
+  "end-game": "End Game",
+  "language": "English",
+  "time": "Remaining time:",
+  "clicks": "Clicks:",
+  "score": "Score:",
+  "are-you-sure": "Are you sure?",
+  "you-win": [
+    "Congratulations! You win!",
+    "Number of clicks: %d",
+    "Game was completed in %d seconds."],
+  "you-lose": ["Time is up!", "You lose!", "Number of clicks: %d"]
+}

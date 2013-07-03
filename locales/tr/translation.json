@@ -1,0 +1,14 @@
+{
+  "start-game": "Yeni Oyun",
+  "end-game": "Oyunu Bitir",
+  "language": "Türkçe",
+  "time": "Kalan süre:",
+  "clicks": "Tıklama:",
+  "score": "Puan:",
+  "are-you-sure": "Emin misiniz?",
+  "you-win": [
+    "Tebrikler! Kazandınız!",
+    "Oyun %d tıklama ile",
+    "%d saniyede tamamlandı."],
+  "you-lose": ["Time is up!", "You lose!", "Number of clicks: %d"]
+}
