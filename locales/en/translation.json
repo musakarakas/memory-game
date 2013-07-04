@@ -1,10 +1,7 @@
 {
-  "start-game": "Start New Game",
+  "start-game": "Start Game",
   "end-game": "End Game",
   "language": "English",
-  "time": "Remaining time:",
-  "clicks": "Clicks:",
-  "score": "Score:",
   "are-you-sure": "Are you sure?",
   "you-win": [
     "Congratulations! You win!",

@@ -77,7 +77,7 @@ var Game = {
       if (!Game.matches_found || window.confirm(i18n.t('are-you-sure')))
         Game.end_game();
     });
-    $('#level').click(function() {
+    $('#level-button').click(function() {
       Game.next_level();
       View.repaint();
     });
@@ -217,9 +217,9 @@ var View = {
     $('#seconds-left').text(Game.max_time - Game.time);
   },
   set_level: function() {
-    var $level = $('#level');
-    Game.is_over ? Utils.enable_button($level) : Utils.disable_button($level);
-    $level.text(Game.level + ' x ' + Game.level);
+    var $button = $('#level-button');
+    Game.is_over ? Utils.enable_button($button) : Utils.disable_button($button);
+    $('#level').text(Game.level + ' x ' + Game.level);
   },
   set_start: function() {
     if (Game.is_over) {

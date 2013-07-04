@@ -14,22 +14,34 @@
     <div id="window">
       <div id="tiles"></div>
       <div id="panel">
-        <button id="start-game" data-i18n="start-game"></button>
-        <button id="end-game" data-i18n="end-game"></button>
-        <button id="level">4 x 4</button>
-        <button id="language" data-i18n="language"></button>
+        <button id="start-game">
+          <i class="icon-play-circle"></i><br/>
+          <span data-i18n="start-game"></span><br/>
+        </button>
+        <button id="end-game">
+          <i class="icon-stop"></i><br/>
+          <span data-i18n="end-game"></span>
+        </button>
+        <button id="level-button">
+          <i class="icon-th"></i><br/>
+          <span id="level">4 x 4</span>
+        </button>
+        <button id="language">
+          <i class="icon-flag"></i><br/>
+          <span data-i18n="language"></span>
+        </button>
         <div id="stats">
           <div>
-            <span data-i18n="time"></span>
-            <span id="seconds-left">0</span>
+            <i class="icon-time"></i>
+            <span id="seconds-left" class="stat">0</span>
           </div>
           <div>
-            <span data-i18n="clicks"></span>
-            <span id="clicks">0</span>
+            <i class="icon-hand-up"></i>
+            <span id="clicks" class="stat">0</span>
           </div>
           <div>
-            <span data-i18n="score"></span>
-            <span id="score">0</span>
+            <i class="icon-trophy"></i>
+            <span id="score" class="stat">0</span>
           </div>
         </div>
       </div>
