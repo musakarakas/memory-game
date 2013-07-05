@@ -69,9 +69,7 @@ var Game = {
   },
   init_actions: function() {
     $('#start-game').click(function() {
-      Game.reset();
-      Game.is_over = false;
-      View.repaint();
+      Game.start_game();
     });
     $('#end-game').click(function() {
       if (!Game.matches_found || window.confirm(i18n.t('are-you-sure')))
@@ -108,13 +106,18 @@ var Game = {
   all_matches_found: function() {
     return Game.matches_found === Game.tile_count / 2;
   },
+  start_game: function() {
+    Game.reset();
+    Game.is_over = false;
+    View.start_game();
+  },
   end_game: function(win) {
     clearInterval(Game.clock);
     Game.disable_tiles();
     Game.is_over = true;
     if (arguments.length)
       show_message();
-    View.repaint();
+    View.end_game();
     function show_message() {
       var params = {sprintf: [Game.clicks, Game.time]};
       alert(i18n.t(win ? 'you-win' : 'you-lose', params));
@@ -231,6 +234,15 @@ var View = {
       $('#start-game').hide();
       $('#end-game').show();
     }
+  },
+  start_game: function() {
+    $('#window').removeClass('overlay');
+    View.repaint();
+  },
+  end_game: function() {
+    if (Game.matches_found === 0)
+      $('#window').addClass('overlay');
+    View.repaint();
   }
 };
 
@@ -284,10 +296,12 @@ Tile.include({
   },
   show: function() {
     this.$image.show();
+    this.$button.addClass('visible');
     this.disable();
   },
   hide: function() {
     this.$image.hide();
+    this.$button.removeClass('visible');
     Utils.enable_button(this.$button);
   },
   disable: function() {
