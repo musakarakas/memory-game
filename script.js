@@ -220,6 +220,8 @@ var View = {
     var $button = $('#level-button');
     Game.is_over ? Utils.enable_button($button) : Utils.disable_button($button);
     $('#level').text(Game.level + ' x ' + Game.level);
+    var klass = Game.level > 5 ? 'icon-th' : 'icon-th-large';
+    $('#level-button i').removeClass().addClass(klass);
   },
   set_start: function() {
     if (Game.is_over) {
