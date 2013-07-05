@@ -4,12 +4,11 @@
   position: relative; margin: auto;
   #tiles button:not(.visible) { background: green; }
   #panel {
-    position: absolute;
-    transition: all .5s;
-    & > * { float: left; }
+    & > * { position: absolute; transition: all .5s; }
     i { color: blue; }
     button {
       .btn; font-size: 1em; line-height: 1em; padding: 0;
+      &.invisible { opacity: 0; height: 0; }
       i { font-size: 4em; }
     }
     #stats {
@@ -21,9 +20,7 @@
       }
     }
     &.overlay {
-      top: 5%; left: 5%;
       & > * {
-        .size(46%, 46%); margin: 2%;
         opacity: .8; &:hover { opacity: 1; }
       }
       button {
@@ -36,20 +33,37 @@
 }
 
 #window.wide {
-  & > * { float: left; }
-  #tiles { .size(100%, 80%); }
+  #tiles { margin: auto; .size(100%, 80%); }
   #panel:not(.overlay) {
-    left: 80%; .size(100%, 20%);
-    & > * { .size(23%, 92%); margin: 4%; }
+    & > * { .size(22.5%, 18%); left: 75%; }
+    #start-game, #end-game { top: 1.25%; }
+    #level-up { top: 26.25%; }
+    #language { top: 51.25%; }
+    #stats { top: 76.25%; }
   }
-  #panel.overlay { .size(90%, 72%); }
+  #panel.overlay {
+    & > * { .size(35%, 28%); }
+    #start-game, #end-game { top: 10%; left: 18%; }
+    #level-up { top: 10%; left: 54%; }
+    #language { top: 55%; left: 18%; }
+    #stats { top: 55%; left: 54%; }
+  }
 }
 
 #window.narrow {
   #tiles { .size(80%, 100%); }
   #panel:not(.overlay) {
-    top: 80%; .size(20%, 100%);
-    & > * { .size(92%, 23%); margin: 1%; }
+    & > * { .size(18%, 22.5%); top: 80%; }
+    #start-game, #end-game { left: 1.25%; }
+    #level-up { left: 26.25%; }
+    #language { left: 51.25%; }
+    #stats { left: 76.25%; }
   }
-  #panel.overlay { .size(72%, 90%); }
+  #panel.overlay {
+    & > * { .size(28%, 35%); }
+    #start-game, #end-game { top: 18%; left: 10%; }
+    #level-up { top: 18%; left: 55%; }
+    #language { top: 54%; left: 10%; }
+    #stats { top: 54%; left: 55%; }
+  }
 }

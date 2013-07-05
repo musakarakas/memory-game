@@ -75,7 +75,7 @@ var Game = {
       if (!Game.matches_found || window.confirm(i18n.t('are-you-sure')))
         Game.end_game();
     });
-    $('#level-button').click(function() {
+    $('#level-up').click(function() {
       Game.next_level();
       View.repaint();
     });
@@ -220,20 +220,15 @@ var View = {
     $('#seconds-left').text(Game.max_time - Game.time);
   },
   set_level: function() {
-    var $button = $('#level-button');
+    var $button = $('#level-up');
     Game.is_over ? Utils.enable_button($button) : Utils.disable_button($button);
     $('#level').text(Game.level + ' x ' + Game.level);
     var klass = Game.level > 5 ? 'icon-th' : 'icon-th-large';
-    $('#level-button i').removeClass().addClass(klass);
+    $('#level-up i').removeClass().addClass(klass);
   },
   set_start: function() {
-    if (Game.is_over) {
-      $('#start-game').show();
-      $('#end-game').hide();
-    } else {
-      $('#start-game').hide();
-      $('#end-game').show();
-    }
+    $('#start-game').toggleClass('invisible', !Game.is_over);
+    $('#end-game').toggleClass('invisible', Game.is_over);
   },
   start_game: function() {
     $('#panel').removeClass('overlay');
