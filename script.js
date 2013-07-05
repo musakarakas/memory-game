@@ -231,12 +231,11 @@ var View = {
     $('#end-game').toggleClass('invisible', Game.is_over);
   },
   start_game: function() {
-    $('#panel').removeClass('overlay');
+    $('#window').removeClass('overlay');
     View.repaint();
   },
   end_game: function() {
-    if (Game.matches_found === 0)
-      $('#panel').addClass('overlay');
+    $('#window').toggleClass('overlay', Game.matches_found === 0);
     View.repaint();
   }
 };

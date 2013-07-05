@@ -3,8 +3,8 @@
 #window {
   position: relative; margin: auto;
   #tiles button:not(.visible) { background: green; }
+  #tiles, #panel > * { position: absolute; transition: all .5s; }
   #panel {
-    & > * { position: absolute; transition: all .5s; }
     i { color: blue; }
     button {
       .btn; font-size: 1em; line-height: 1em; padding: 0;
@@ -19,29 +19,30 @@
         .stat { .pull-right; margin-top: .25em; color: red; }
       }
     }
-    &.overlay {
-      & > * {
-        opacity: .8; &:hover { opacity: 1; }
-      }
-      button {
-        font-size: 1.2em; line-height: 1.2em;
-        i { font-size: 6em; }
-      }
-      #stats div { font-size: 2.7em; }
+  }
+  &.overlay #panel {
+    & > * {
+      opacity: .8; &:hover { opacity: 1; }
     }
+    button {
+      font-size: 1.2em; line-height: 1.2em;
+      i { font-size: 6em; }
+    }
+    #stats div { font-size: 2.7em; }
   }
 }
 
 #window.wide {
-  #tiles { margin: auto; .size(100%, 80%); }
-  #panel:not(.overlay) {
-    & > * { .size(22.5%, 18%); left: 75%; }
+  #tiles { .size(100%, 80%); }
+  &.overlay #tiles { left: 10%; }
+  &:not(.overlay) #panel {
+    & > * { .size(22.5%, 18%); left: 81%; }
     #start-game, #end-game { top: 1.25%; }
     #level-up { top: 26.25%; }
     #language { top: 51.25%; }
     #stats { top: 76.25%; }
   }
-  #panel.overlay {
+  &.overlay #panel {
     & > * { .size(35%, 28%); }
     #start-game, #end-game { top: 10%; left: 18%; }
     #level-up { top: 10%; left: 54%; }
@@ -52,14 +53,15 @@
 
 #window.narrow {
   #tiles { .size(80%, 100%); }
-  #panel:not(.overlay) {
-    & > * { .size(18%, 22.5%); top: 80%; }
+  &.overlay #tiles { top: 10%; }
+  &:not(.overlay) #panel {
+    & > * { .size(18%, 22.5%); top: 81.25%; }
     #start-game, #end-game { left: 1.25%; }
     #level-up { left: 26.25%; }
     #language { left: 51.25%; }
     #stats { left: 76.25%; }
   }
-  #panel.overlay {
+  &.overlay #panel {
     & > * { .size(28%, 35%); }
     #start-game, #end-game { top: 18%; left: 10%; }
     #level-up { top: 18%; left: 55%; }
