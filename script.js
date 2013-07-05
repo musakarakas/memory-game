@@ -236,12 +236,12 @@ var View = {
     }
   },
   start_game: function() {
-    $('#window').removeClass('overlay');
+    $('#panel').removeClass('overlay');
     View.repaint();
   },
   end_game: function() {
     if (Game.matches_found === 0)
-      $('#window').addClass('overlay');
+      $('#panel').addClass('overlay');
     View.repaint();
   }
 };
