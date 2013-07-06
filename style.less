@@ -2,7 +2,11 @@
 
 #window {
   position: relative; margin: auto;
-  #tiles button:not(.visible) { background: green; }
+  #tiles button {
+    &:disabled { background: #1abc9c; }
+    &:enabled { background: #2ecc71; &:hover { background: #58d68d; } }
+    &.visible { background: #ec7063; }
+  }
   #tiles, #panel > * { position: absolute; transition: all .5s; }
   #panel {
     i { color: blue; }
