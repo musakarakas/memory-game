@@ -1,9 +1,9 @@
 var Game = {
   init: function() {
     Game.init_options();
+    Game.init_timer();
     Game.init_stats();
     Game.init_tiles();
-    Game.init_clock();
     Game.init_actions();
     Game.internationalize();
     View.repaint();
@@ -21,7 +21,7 @@ var Game = {
   reset: function() {
     Game.reset_stats();
     Game.reset_tiles();
-    Game.reset_clock();
+    Game.timer.start();
   },
   init_options: function() {
     Game.level = 4;
@@ -32,14 +32,14 @@ var Game = {
   },
   reset_stats: function() {
     Game.set_clicks(0);
-    Game.set_time(0);
+    Game.timer.reset();
     Game.matches_found = 0;
     Game.is_over = true;
   },
   init_tiles: function() {
     Game.tiles = [];
     Game.tile_count = Math.pow(Game.level, 2) - (Game.level % 2);
-    Game.max_time = Game.tile_count * 4;
+    Game.timer.set_max_time(Game.tile_count * 4);
     for (var i = 0; i < Game.tile_count; i++)
       Game.tiles[i] = new Tile(i % (Game.tile_count / 2));
     View.draw_tiles();
@@ -55,16 +55,38 @@ var Game = {
     Game.shuffle_tiles();
     Game.repaint_tiles();
   },
-  init_clock: function() {
-    Game.clock = null;
-  },
-  reset_clock: function() {
-    clearInterval(Game.clock);
-    Game.clock = setInterval(tick, 1000);
-    function tick() {
-      Game.set_time(Game.time + 1);
-      if (Game.time >= Game.max_time)
-        Game.end_game(false);
+  init_timer: function() {
+    var interval = null;
+    var time = 0;
+    var max_time = 0;
+    reset();
+    Game.timer = {start: start, stop: stop, reset: reset,
+      get_time: get_time, set_max_time: set_max_time, display: display};
+
+    function start() {
+      reset();
+      interval = setInterval(function() {
+        ++time;
+        display();
+        if (time >= max_time)
+          Game.end_game(false);
+      }, 1000);
+    }
+    function stop() {
+      clearInterval(interval);
+    }
+    function reset() {
+      stop();
+      time = 0;
+    }
+    function get_time() {
+      return time;
+    }
+    function set_max_time(t) {
+      max_time = t;
+    }
+    function display() {
+      $('#seconds-left').text(max_time - time);
     }
   },
   init_actions: function() {
@@ -90,10 +112,6 @@ var Game = {
     Game.clicks = clicks;
     View.set_clicks();
   },
-  set_time: function(time) {
-    Game.time = time;
-    View.set_time();
-  },
   shuffle_tiles: function() {
     for (var i = 0; i < Game.tiles.length; i++)
       swap_tiles(i, Math.floor(Math.random() * Game.tiles.length));
@@ -112,14 +130,14 @@ var Game = {
     View.start_game();
   },
   end_game: function(win) {
-    clearInterval(Game.clock);
+    Game.timer.stop();
     Game.disable_tiles();
     Game.is_over = true;
     if (arguments.length)
       show_message();
     View.end_game();
     function show_message() {
-      var params = {sprintf: [Game.clicks, Game.time]};
+      var params = {sprintf: [Game.clicks, Game.timer.get_time()]};
       alert(i18n.t(win ? 'you-win' : 'you-lose', params));
     }
   },
@@ -181,7 +199,7 @@ var View = {
     Game.repaint_tiles();
   },
   repaint_stats: function() {
-    View.set_time();
+    Game.timer.display();
     View.set_level();
     View.set_start();
   },
@@ -215,9 +233,6 @@ var View = {
   },
   set_clicks: function() {
     $('#clicks').text(Game.clicks);
-  },
-  set_time: function() {
-    $('#seconds-left').text(Game.max_time - Game.time);
   },
   set_level: function() {
     var $button = $('#level-up');
