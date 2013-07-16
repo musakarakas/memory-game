@@ -28,10 +28,11 @@ var Game = {
     Game.language = 'en';
   },
   init_stats: function() {
+    Game.init_clicks();
     Game.reset_stats();
   },
   reset_stats: function() {
-    Game.set_clicks(0);
+    Game.clicks.reset();
     Game.timer.reset();
     Game.matches_found = 0;
     Game.is_over = true;
@@ -56,17 +57,15 @@ var Game = {
     Game.repaint_tiles();
   },
   init_timer: function() {
-    var interval = null;
-    var time = 0;
-    var max_time = 0;
+    var interval = null, time = 0, max_time = 0;
     reset();
     Game.timer = {start: start, stop: stop, reset: reset,
-      get_time: get_time, set_max_time: set_max_time, display: display};
+      time: get_time, set_max_time: set_max_time, display: display};
 
     function start() {
       reset();
       interval = setInterval(function() {
-        ++time;
+        time++;
         display();
         if (time >= max_time)
           Game.end_game(false);
@@ -89,6 +88,31 @@ var Game = {
       $('#seconds-left').text(max_time - time);
     }
   },
+  init_clicks: function() {
+    var count = 0;
+    reset();
+    Game.clicks = {reset: reset, increment: increment, value: get, is_odd: odd};
+
+    function set(n) {
+      count = n;
+      display();
+    }
+    function reset() {
+      set(0);
+    }
+    function increment() {
+      set(count + 1);
+    }
+    function get() {
+      return count;
+    }
+    function odd() {
+      return count % 2 === 1;
+    }
+    function display() {
+      $('#clicks').text(count);
+    }
+  },
   init_actions: function() {
     $('#start-game').click(function() {
       Game.start_game();
@@ -107,10 +131,6 @@ var Game = {
     $(window).resize(function() {
       View.resize();
     });
-  },
-  set_clicks: function(clicks) {
-    Game.clicks = clicks;
-    View.set_clicks();
   },
   shuffle_tiles: function() {
     for (var i = 0; i < Game.tiles.length; i++)
@@ -137,13 +157,13 @@ var Game = {
       show_message();
     View.end_game();
     function show_message() {
-      var params = {sprintf: [Game.clicks, Game.timer.get_time()]};
+      var params = {sprintf: [Game.clicks.value(), Game.timer.time()]};
       alert(i18n.t(win ? 'you-win' : 'you-lose', params));
     }
   },
   click_tile: function(tile) {
-    Game.set_clicks(Game.clicks + 1);
-    Game.clicks % 2 === 1 ? first_click() : second_click();
+    Game.clicks.increment();
+    Game.clicks.is_odd() ? first_click() : second_click();
     function first_click() {
       Game.repaint_tiles();
       tile.show();
@@ -230,9 +250,6 @@ var View = {
       $('body').css('font-size', font_size);
       $('body').css('line-height', $('body').css('font-size'));
     }
-  },
-  set_clicks: function() {
-    $('#clicks').text(Game.clicks);
   },
   set_level: function() {
     var $button = $('#level-up');
