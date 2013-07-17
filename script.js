@@ -1,38 +1,49 @@
 var Game = {
   init: function() {
-    Game.init_options();
-    Game.init_timer();
-    Game.init_stats();
-    Game.init_tiles();
     Game.init_state();
-    View.repaint();
-  },
-  init_options: function() {
     Game.init_levels();
     Game.init_i18n();
-  },
-  init_stats: function() {
+    Game.init_timer();
     Game.init_clicks();
-    Game.reset_stats();
+    Game.init_tiles();
+    View.repaint();
   },
-  reset_stats: function() {
-    Game.clicks.reset();
-    Game.timer.reset();
-    Game.matches_found = 0;
-  },
-  init_tiles: function() {
-    Game.tiles = [];
-    var n = Game.level.tile_count();
-    Game.timer.set_max_time(n * 4);
-    for (var i = 0; i < n; i++)
-      Game.tiles[i] = new Tile(i % (n / 2));
-    View.draw_tiles();
-  },
-  reset_tiles: function() {
-    for (var i = 0; i < Game.tiles.length; i++)
-      Game.tiles[i].reset();
-    Game.shuffle_tiles();
-    Game.repaint_tiles();
+  init_state: function() {
+    var over = true;
+    Game.state = {end: end_game, over: is_over, display: display};
+
+    $('#start-game').click(function() {
+      Game.reset_stats();
+      Game.reset_tiles();
+      Game.timer.start();
+      over = false;
+      $('#window').removeClass('overlay');
+      View.repaint();
+    });
+    $('#end-game').click(function() {
+      if (!Game.matches_found || window.confirm(i18n.t('are-you-sure')))
+        end_game();
+    });
+    $(window).resize(function() {
+      View.resize();
+    });
+    function end_game(win) {
+      Game.timer.stop();
+      Game.disable_tiles();
+      over = true;
+      if (arguments.length) {
+        var params = {sprintf: [Game.clicks.value(), Game.timer.time()]};
+        alert(i18n.t(win ? 'you-win' : 'you-lose', params));
+      }
+      View.repaint();
+    }
+    function is_over() {
+      return over;
+    }
+    function display() {
+      $('#start-game').toggleClass('invisible', !over);
+      $('#end-game').toggleClass('invisible', over);
+    }
   },
   init_levels: function() {
     var level = 4;
@@ -131,42 +142,19 @@ var Game = {
       $('#clicks').text(count);
     }
   },
-  init_state: function() {
-    var over = true;
-    Game.state = {end: end_game, over: is_over, display: display};
-
-    $('#start-game').click(function() {
-      Game.reset_stats();
-      Game.reset_tiles();
-      Game.timer.start();
-      over = false;
-      $('#window').removeClass('overlay');
-      View.repaint();
-    });
-    $('#end-game').click(function() {
-      if (!Game.matches_found || window.confirm(i18n.t('are-you-sure')))
-        end_game();
-    });
-    $(window).resize(function() {
-      View.resize();
-    });
-    function end_game(win) {
-      Game.timer.stop();
-      Game.disable_tiles();
-      over = true;
-      if (arguments.length) {
-        var params = {sprintf: [Game.clicks.value(), Game.timer.time()]};
-        alert(i18n.t(win ? 'you-win' : 'you-lose', params));
-      }
-      View.repaint();
-    }
-    function is_over() {
-      return over;
-    }
-    function display() {
-      $('#start-game').toggleClass('invisible', !over);
-      $('#end-game').toggleClass('invisible', over);
-    }
+  init_tiles: function() {
+    Game.tiles = [];
+    var n = Game.level.tile_count();
+    Game.timer.set_max_time(n * 4);
+    for (var i = 0; i < n; i++)
+      Game.tiles[i] = new Tile(i % (n / 2));
+    View.draw_tiles();
+  },
+  reset_tiles: function() {
+    for (var i = 0; i < Game.tiles.length; i++)
+      Game.tiles[i].reset();
+    Game.shuffle_tiles();
+    Game.repaint_tiles();
   },
   shuffle_tiles: function() {
     for (var i = 0; i < Game.tiles.length; i++)
@@ -176,6 +164,11 @@ var Game = {
       Game.tiles[i].set_id(Game.tiles[j].id);
       Game.tiles[j].set_id(id);
     }
+  },
+  reset_stats: function() {
+    Game.clicks.reset();
+    Game.timer.reset();
+    Game.matches_found = 0;
   },
   all_matches_found: function() {
     return Game.matches_found === Game.level.tile_count() / 2;
