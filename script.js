@@ -47,6 +47,7 @@ var Game = {
 
     $('#start-game').click(function() {
       Game.tiles.reset();
+      Game.clicks.reset();
       Game.timer.start();
       over = false;
       $('#window').removeClass('overlay');
