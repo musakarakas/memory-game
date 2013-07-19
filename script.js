@@ -168,10 +168,13 @@ var Game = {
   init_tiles: function() {
     var tiles, $tiles = $('#tiles'), tile_to_match, count, matches = 0;
     load();
-    
-    Game.tiles = {load: load, match_found: match_found,
-      reset: reset, disable: disable, display: display, click: click};
 
+    Game.tiles = {load: load, reset: reset,
+      match_found: match_found, disable: disable, display: display};
+
+    $tiles.on('click', '.tile', function() {
+      click(this.tile);
+    });
     function match_found() {
       return matches > 0;
     }
@@ -288,13 +291,10 @@ var Class = function() {
 var Tile = new Class;
 Tile.include({
   init: function(id) {
-    var self = this;
     this.id = id;
     this.$button = $('<button/>', {class: 'tile'});
     this.$image = $('<img/>').appendTo(this.$button);
-    this.$button.click(function() {
-      Game.tiles.click(self);
-    });
+    this.$button.get()[0].tile = this;
     this.$image.attr('src', 'images/' + (id + 1) + '.png');
     this.reset();
   },
