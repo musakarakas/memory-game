@@ -4,32 +4,32 @@ var Game = {
     Game.init_state();
     Game.init_level();
     Game.init_i18n();
-    Game.init_timer();
     Game.init_clicks();
     Game.init_tiles();
+    Game.init_timer();
     Game.repaint();
   },
   init_window: function() {
     resize();
     $(window).resize(resize);
     function resize() {
-      var w = $(window).width(), h = $(window).height(), size;
+      var w = $(window).width(), h = $(window).height(), size, r = 4 / 5;
       w > h ? set_wide_size() : set_narrow_size();
       set_font_size();
       function set_wide_size() {
-        size = Math.min(w * 4 / 5, h) * .99;
+        size = Math.min(w * r, h) * .99;
         $('#window').css({
-          'width': size * 5 / 4, 'height': size,
+          'width': size / r, 'height': size,
           'margin-top': (h - size) / 2
         });
         $('#window').removeClass('narrow');
         $('#window').addClass('wide');
       }
       function set_narrow_size() {
-        size = Math.min(w, h * 4 / 5) * .99;
+        size = Math.min(w, h * r) * .99;
         $('#window').css({
-          'width': size, 'height': size * 5 / 4,
-          'margin-top': (h - size * 5 / 4) / 2
+          'width': size, 'height': size / r,
+          'margin-top': (h - size / r) / 2
         });
         $('#window').removeClass('wide');
         $('#window').addClass('narrow');
@@ -42,37 +42,46 @@ var Game = {
     }
   },
   init_state: function() {
-    var over = true;
-    Game.state = {end: end_game, over: is_over, display: display};
+    var gameover = true;
+    Game.state = {win: win, lose: lose, gameover: is_over, display: display};
 
     $('#start-game').click(function() {
-      Game.tiles.reset();
-      Game.clicks.reset();
-      Game.timer.start();
-      over = false;
-      $('#window').removeClass('overlay');
-      Game.repaint();
+      start_game();
     });
     $('#end-game').click(function() {
       if (!Game.tiles.match_found() || window.confirm(i18n.t('are-you-sure')))
         end_game();
     });
+    function start_game() {
+      gameover = false;
+      Game.tiles.reset();
+      Game.clicks.reset();
+      Game.timer.start();
+      $('#window').removeClass('overlay');
+      Game.repaint();
+    }
     function end_game(win) {
+      gameover = true;
       Game.timer.stop();
       Game.tiles.disable();
-      over = true;
       if (arguments.length) {
         var params = {sprintf: [Game.clicks.value(), Game.timer.time()]};
         alert(i18n.t(win ? 'you-win' : 'you-lose', params));
       }
       Game.repaint();
     }
+    function win() {
+      end_game(true);
+    }
+    function lose() {
+      end_game(false);
+    }
     function is_over() {
-      return over;
+      return gameover;
     }
     function display() {
-      $('#start-game').toggleClass('invisible', !over);
-      $('#end-game').toggleClass('invisible', over);
+      $('#start-game').toggleClass('invisible', !gameover);
+      $('#end-game').toggleClass('invisible', gameover);
     }
   },
   init_level: function() {
@@ -92,8 +101,8 @@ var Game = {
       return level;
     }
     function display() {
-      var $btn = $('#level-up');
-      Game.state.over() ? Utils.enable_button($btn) : Utils.disable_button($btn);
+      var $button = $('#level-up');
+      Game.state.gameover() ? Utils.enable($button) : Utils.disable($button);
       $('#level').text(level + ' x ' + level);
       var klass = level > 5 ? 'icon-th' : 'icon-th-large';
       $('#level-up i').removeClass().addClass(klass);
@@ -112,16 +121,15 @@ var Game = {
   },
   init_timer: function() {
     var interval = null, time = 0, max_time = 0;
-    Game.timer = {start: start, stop: stop, reset: reset,
-      time: get_time, set_max_time: set_max_time, display: display};
+    Game.timer = {start: start, stop: stop, reset: reset, time: get_time};
+    reset();
 
     function start() {
       reset();
       interval = setInterval(function() {
-        time++;
-        display();
+        set_time(time + 1);
         if (time >= max_time)
-          Game.state.end(false);
+          Game.state.lose();
       }, 1000);
     }
     function stop() {
@@ -129,60 +137,86 @@ var Game = {
     }
     function reset() {
       stop();
-      time = 0;
+      max_time = Game.tiles.count() * 4;
+      set_time(0);
     }
     function get_time() {
       return time;
     }
-    function set_max_time(t) {
-      max_time = t;
-    }
-    function display() {
+    function set_time(t) {
+      time = t;
       $('#seconds-left').text(max_time - time);
     }
   },
   init_clicks: function() {
-    var count = 0;
-    reset();
-    Game.clicks = {reset: reset, increment: increment, value: get, is_odd: odd};
+    var count = 0, $tiles = $('#tiles'), tile_to_match;
+    Game.clicks = {reset: reset, value: get};
 
+    reset();
+    $tiles.on('click', '.tile', function() {
+      click(this.tile);
+    });
     function get() {
       return count;
     }
     function set(n) {
       count = n;
-      display();
+      $('#clicks').text(count);
     }
     function reset() {
       set(0);
     }
-    function increment() {
+    function click(tile) {
       set(count + 1);
-    }
-    function odd() {
-      return count % 2 === 1;
-    }
-    function display() {
-      $('#clicks').text(count);
+      count % 2 === 1 ? first_click() : second_click();
+      function first_click() {
+        hide();
+        tile.show();
+        tile_to_match = tile;
+      }
+      function second_click() {
+        tile.show();
+        if (tile.id === tile_to_match.id)
+          Game.tiles.match(tile_to_match, tile);
+        else
+          hide(tile_to_match, tile);
+      }
+      function hide(first_tile, second_tile) {
+        var timeout;
+        if (arguments.length) {
+          $tiles.on('hide', function() {
+            first_tile.display();
+            second_tile.display();
+            clearTimeout(timeout);
+            $tiles.off('hide');
+          });
+          timeout = setTimeout(hide, 300);
+        }
+        else {
+          $tiles.trigger('hide');
+        }
+      }
     }
   },
   init_tiles: function() {
-    var tiles, $tiles = $('#tiles'), tile_to_match, count, matches = 0;
+    var tiles, $tiles = $('#tiles'), count, matches = 0;
+    Game.tiles = {load: load, match: match, match_found: match_found,
+      reset: reset, count: get_count, disable: disable, display: display};
+
     load();
 
-    Game.tiles = {load: load, reset: reset,
-      match_found: match_found, disable: disable, display: display};
-
-    $tiles.on('click', '.tile', function() {
-      click(this.tile);
-    });
     function match_found() {
       return matches > 0;
+    }
+    function match(tile1, tile2) {
+      matches++;
+      tile1.matched = tile2.matched = true;
+      if (matches === count / 2)
+        Game.state.win();
     }
     function load() {
       var level = Game.level.value();
       count = Math.pow(level, 2) - (level % 2);
-      Game.timer.set_max_time(count * 4);
 
       tiles = [];
       $tiles.empty();
@@ -207,51 +241,21 @@ var Game = {
         $tile1.after($tile2);
       }
     }
+    function get_count() {
+      return count;
+    }
     function display() {
-      for (var i = 0; i < tiles.length; i++) {
-        if (tiles[i].matched)
-          tiles[i].show();
-        else
-          tiles[i].hide();
-      }
-      if (Game.state.over())
+      for (var i = 0; i < tiles.length; i++)
+        tiles[i].display();
+      if (Game.state.gameover())
         disable();
     }
     function disable() {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].disable();
     }
-    function click(tile) {
-      Game.clicks.increment();
-      Game.clicks.is_odd() ? first_click() : second_click();
-      function first_click() {
-        display(); // OPTIMIZE: trigger hide.timeout instead
-        tile.show();
-        tile_to_match = tile;
-      }
-      function second_click() {
-        tile.show();
-        if (tile.id === tile_to_match.id)
-          match_found();
-        else
-          hide(tile_to_match, tile);
-      }
-      function match_found() {
-        matches++;
-        tile_to_match.matched = tile.matched = true;
-        if (matches === count / 2)
-          Game.state.end(true);
-      }
-      function hide(first_tile, second_tile) {
-        setTimeout(function() {
-          first_tile.hide();
-          second_tile.hide();
-        }, 300);
-      }
-    }
   },
   repaint: function() {
-    Game.timer.display();
     Game.level.display();
     Game.state.display();
     Game.tiles.display();
@@ -312,18 +316,21 @@ Tile.include({
   hide: function() {
     this.$image.hide();
     this.$button.removeClass('visible');
-    Utils.enable_button(this.$button);
+    Utils.enable(this.$button);
+  },
+  display: function() {
+    this.matched ? this.show() : this.hide();
   },
   disable: function() {
-    Utils.disable_button(this.$button);
+    Utils.disable(this.$button);
   }
 });
 
 var Utils = {
-  enable_button: function($button) {
+  enable: function($button) {
     $button.removeAttr('disabled');
   },
-  disable_button: function($button) {
+  disable: function($button) {
     $button.attr('disabled', 'disabled');
   }
 };
