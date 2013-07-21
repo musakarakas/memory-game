@@ -226,7 +226,7 @@ var Game = {
       }
 
       var tile_size = (100 / level) + '%';
-      $('#tiles button').css({'width': tile_size, 'height': tile_size});
+      $('.tile').css({'width': tile_size, 'height': tile_size});
     }
     function reset() {
       for (var i = 0; i < tiles.length; i++)
@@ -236,8 +236,8 @@ var Game = {
     }
     function shuffle() {
       for (var i = 0; i < count; i++) {
-        var $tile1 = $('#tiles button').eq(i);
-        var $tile2 = $('#tiles button').eq(Math.floor(Math.random() * count));
+        var $tile1 = $('.tile').eq(i);
+        var $tile2 = $('.tile').eq(Math.floor(Math.random() * count));
         $tile1.after($tile2);
       }
     }
