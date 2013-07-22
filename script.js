@@ -295,39 +295,11 @@ var Game = {
   }
 };
 
-var Class = function() {
-  var klass = function() {
-    this.init.apply(this, arguments);
-  };
-  klass.prototype.init = function() {
-  };
-  // Shortcut to access prototype
-  klass.fn = klass.prototype;
-  // Shortcut to access class
-  klass.fn.parent = klass;
-  // Adding class properties
-  klass.extend = function(obj) {
-    var extended = obj.extended;
-    for (var i in obj) {
-      klass[i] = obj[i];
-    }
-    if (extended)
-      extended(klass);
-  };
-  // Adding instance properties
-  klass.include = function(obj) {
-    var included = obj.included;
-    for (var i in obj) {
-      klass.fn[i] = obj[i];
-    }
-    if (included)
-      included(klass);
-  };
-  return klass;
+var Tile = function(id) {
+  this.init(id);
 };
 
-var Tile = new Class;
-Tile.include({
+Tile.prototype = {
   init: function(id) {
     this.id = id;
     this.$div = $('<div/>', {class: 'tile'});
@@ -362,7 +334,7 @@ Tile.include({
     this.enabled = false;
     this.$div.removeClass('enabled');
   }
-});
+};
 
 var Utils = {
   enable: function($button) {
