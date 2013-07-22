@@ -170,6 +170,7 @@ var Game = {
       set(0);
     }
     function click(tile) {
+      if (!tile.enabled) return;
       set(count + 1);
       count % 2 === 1 ? first_click() : second_click();
       function first_click() {
@@ -226,10 +227,10 @@ var Game = {
       $tiles.empty();
       for (var i = 0; i < count; i++) {
         tiles[i] = new Tile(i % (count / 2));
-        tiles[i].$button.appendTo($tiles);
+        tiles[i].$div.appendTo($tiles);
       }
 
-      var tile_size = (100 / level) + '%';
+      var tile_size = (100 / level - .4) + '%';
       $('.tile').css({'width': tile_size, 'height': tile_size});
     }
     function reset() {
@@ -329,9 +330,9 @@ var Tile = new Class;
 Tile.include({
   init: function(id) {
     this.id = id;
-    this.$button = $('<button/>', {class: 'tile'});
-    this.$image = $('<img/>').appendTo(this.$button);
-    this.$button.get()[0].tile = this;
+    this.$div = $('<div/>', {class: 'tile'});
+    this.$image = $('<img/>').appendTo(this.$div);
+    this.$div.get()[0].tile = this;
     this.$image.attr('src', 'images/' + (id + 1) + '.png');
     this.reset();
   },
@@ -342,19 +343,24 @@ Tile.include({
   },
   show: function() {
     this.$image.show();
-    this.$button.addClass('visible');
+    this.$div.addClass('visible');
     this.disable();
   },
   hide: function() {
     this.$image.hide();
-    this.$button.removeClass('visible');
-    Utils.enable(this.$button);
+    this.$div.removeClass('visible');
+    this.enable();
   },
   display: function() {
     this.matched ? this.show() : this.hide();
   },
+  enable: function() {
+    this.enabled = true;
+    this.$div.addClass('enabled');
+  },
   disable: function() {
-    Utils.disable(this.$button);
+    this.enabled = false;
+    this.$div.removeClass('enabled');
   }
 });
 

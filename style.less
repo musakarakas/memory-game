@@ -2,9 +2,10 @@
 
 #window {
   position: relative; margin: auto;
-  #tiles button {
-    &:disabled { background: #1abc9c; }
-    &:enabled { background: #2ecc71; &:hover { background: #58d68d; } }
+  #tiles .tile {
+    float: left; margin: .2%;
+    background: #1abc9c;
+    &.enabled { background: #2ecc71; &:hover { background: #58d68d; } }
     &.visible { background: #ec7063; }
   }
   #tiles, #panel > * { position: absolute; transition: all .5s; }
