@@ -1,16 +1,22 @@
-var Game = {
-  init: function() {
-    Game.init_window();
-    Game.init_state();
-    Game.init_level();
-    Game.init_i18n();
-    Game.init_clicks();
-    Game.init_tiles();
-    Game.init_timer();
-    Game.init_score();
-    Game.repaint();
-  },
-  init_window: function() {
+$(function() {
+  var State, Tiles, Clicks, Score, Timer, View, Level;
+  load_game();
+
+  // return window.Game = {state: State, tiles: Tiles,
+  //   clicks: Clicks, score: Score, timer: Timer, view: View, level: Level};
+
+  function load_game() {
+    load_window();
+    load_state();
+    load_level();
+    load_i18n();
+    load_clicks();
+    load_tiles();
+    load_timer();
+    load_score();
+    load_view();
+  }
+  function load_window() {
     resize();
     $(window).resize(resize);
     function resize() {
@@ -41,36 +47,36 @@ var Game = {
         $('body').css('line-height', $('body').css('font-size'));
       }
     }
-  },
-  init_state: function() {
+  }
+  function load_state() {
     var gameover = true;
-    Game.state = {win: win, lose: lose, gameover: is_over, display: display};
+    State = {win: win, lose: lose, gameover: is_over, display: display};
 
     $('#start-game').click(function() {
       start_game();
     });
     $('#end-game').click(function() {
-      if (!Game.tiles.match_found() || window.confirm(i18n.t('are-you-sure')))
+      if (!Tiles.match_found() || window.confirm(i18n.t('are-you-sure')))
         end_game();
     });
     function start_game() {
       gameover = false;
-      Game.tiles.reset();
-      Game.clicks.reset();
-      Game.score.reset();
-      Game.timer.start();
+      Tiles.reset();
+      Clicks.reset();
+      Score.reset();
+      Timer.start();
       $('#window').removeClass('overlay');
-      Game.repaint();
+      View.repaint();
     }
     function end_game(win) {
       gameover = true;
-      Game.timer.stop();
-      Game.tiles.disable();
+      Timer.stop();
+      Tiles.disable();
       if (arguments.length) {
-        var params = {sprintf: [Game.score.value()]};
+        var params = {sprintf: [Score.value()]};
         alert(i18n.t(win ? 'you-win' : 'you-lose', params));
       }
-      Game.repaint();
+      View.repaint();
     }
     function win() {
       end_game(true);
@@ -85,20 +91,20 @@ var Game = {
       $('#start-game').toggleClass('invisible', !gameover);
       $('#end-game').toggleClass('invisible', gameover);
     }
-  },
-  init_level: function() {
+  }
+  function load_level() {
     var level = 4;
     $('#level-up').click(next);
 
-    Game.level = {display: display, next: next, value: get};
+    Level = {display: display, next: next, value: get};
 
     function next() {
       level = (level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
-      Game.tiles.load();
-      Game.clicks.reset();
-      Game.score.reset();
-      Game.timer.reset();
-      Game.repaint();
+      Tiles.load();
+      Clicks.reset();
+      Score.reset();
+      Timer.reset();
+      View.repaint();
     }
     function get() {
       return level;
@@ -106,15 +112,15 @@ var Game = {
     function display() {
       var $button = $('#level-up');
 
-      if (Game.state.gameover()) $button.removeAttr('disabled')
+      if (State.gameover()) $button.removeAttr('disabled')
       else $button.attr('disabled', 'disabled');
 
       $('#level').text(level + ' x ' + level);
       var klass = level > 5 ? 'icon-th' : 'icon-th-large';
       $('#level-up i').removeClass().addClass(klass);
     }
-  },
-  init_i18n: function() {
+  }
+  function load_i18n() {
     set_language();
     $('#language').click(set_language);
     function set_language() {
@@ -124,10 +130,10 @@ var Game = {
         $('body').i18n();
       });
     }
-  },
-  init_timer: function() {
+  }
+  function load_timer() {
     var interval = null, time = 0, max_time = 0;
-    Game.timer = {start: start, stop: stop, reset: reset, time: get_time};
+    Timer = {start: start, stop: stop, reset: reset, time: get_time};
     reset();
 
     function start() {
@@ -135,7 +141,7 @@ var Game = {
       interval = setInterval(function() {
         set_time(time + 1);
         if (time >= max_time)
-          Game.state.lose();
+          State.lose();
       }, 1000);
     }
     function stop() {
@@ -143,7 +149,7 @@ var Game = {
     }
     function reset() {
       stop();
-      max_time = Game.tiles.count() * 4;
+      max_time = Tiles.count() * 4;
       set_time(0);
     }
     function get_time() {
@@ -153,10 +159,10 @@ var Game = {
       time = t;
       $('#seconds-left').text(max_time - time);
     }
-  },
-  init_clicks: function() {
+  }
+  function load_clicks() {
     var count = 0, $tiles = $('#tiles'), tile_to_match;
-    Game.clicks = {reset: reset, value: get};
+    Clicks = {reset: reset, value: get};
 
     reset();
     $tiles.on('click', '.tile', function() {
@@ -184,7 +190,7 @@ var Game = {
       function second_click() {
         tile.show();
         if (tile.id === tile_to_match.id)
-          Game.tiles.match(tile_to_match, tile);
+          Tiles.match(tile_to_match, tile);
         else
           hide(tile_to_match, tile);
       }
@@ -204,11 +210,11 @@ var Game = {
         }
       }
     }
-  },
-  init_tiles: function() {
+  }
+  function load_tiles() {
     var Tile = defineTileClass();
     var tiles, $tiles = $('#tiles'), count, matches = 0;
-    Game.tiles = {load: load, match: match, match_found: match_found,
+    Tiles = {load: load, match: match, match_found: match_found,
       reset: reset, count: get_count, disable: disable, display: display};
 
     load();
@@ -218,13 +224,13 @@ var Game = {
     }
     function match(tile1, tile2) {
       matches++;
-      Game.score.update();
+      Score.update();
       tile1.matched = tile2.matched = true;
       if (matches === count / 2)
-        Game.state.win();
+        State.win();
     }
     function load() {
-      var level = Game.level.value();
+      var level = Level.value();
       count = Math.pow(level, 2) - (level % 2);
 
       tiles = [];
@@ -256,7 +262,7 @@ var Game = {
     function display() {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].display();
-      if (Game.state.gameover())
+      if (State.gameover())
         disable();
     }
     function disable() {
@@ -308,10 +314,10 @@ var Game = {
 
       return Tile;
     }
-  },
-  init_score: function() {
+  }
+  function load_score() {
     var last_match_time, last_match_clicks, score;
-    Game.score = {reset: reset, update: update, value: get};
+    Score = {reset: reset, update: update, value: get};
     reset();
 
     function reset() {
@@ -320,11 +326,11 @@ var Game = {
       set(0);
     }
     function update() {
-      var time = Game.timer.time() - last_match_time;
-      var clicks = Game.clicks.value() - last_match_clicks;
-      add(Game.tiles.count() * 20 / (time + 1) / (clicks + 1));
-      last_match_time = Game.timer.time();
-      last_match_clicks = Game.clicks.value();
+      var time = Timer.time() - last_match_time;
+      var clicks = Clicks.value() - last_match_clicks;
+      add(Tiles.count() * 20 / (time + 1) / (clicks + 1));
+      last_match_time = Timer.time();
+      last_match_clicks = Clicks.value();
     }
     function add(n) {
       set(score + Math.round(n));
@@ -336,14 +342,15 @@ var Game = {
     function get() {
       return score;
     }
-  },
-  repaint: function() {
-    Game.level.display();
-    Game.state.display();
-    Game.tiles.display();
   }
-};
+  function load_view() {
+    View = {repaint: repaint};
+    repaint();
 
-$(function() {
-  Game.init();
+    function repaint() {
+      Level.display();
+      State.display();
+      Tiles.display();
+    }
+  }
 });
