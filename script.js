@@ -7,6 +7,7 @@ var Game = {
     Game.init_clicks();
     Game.init_tiles();
     Game.init_timer();
+    Game.init_score();
     Game.repaint();
   },
   init_window: function() {
@@ -56,6 +57,7 @@ var Game = {
       gameover = false;
       Game.tiles.reset();
       Game.clicks.reset();
+      Game.score.reset();
       Game.timer.start();
       $('#window').removeClass('overlay');
       Game.repaint();
@@ -65,7 +67,7 @@ var Game = {
       Game.timer.stop();
       Game.tiles.disable();
       if (arguments.length) {
-        var params = {sprintf: [Game.clicks.value(), Game.timer.time()]};
+        var params = {sprintf: [Game.score.value()]};
         alert(i18n.t(win ? 'you-win' : 'you-lose', params));
       }
       Game.repaint();
@@ -94,6 +96,7 @@ var Game = {
       level = (level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
       Game.tiles.load();
       Game.clicks.reset();
+      Game.score.reset();
       Game.timer.reset();
       Game.repaint();
     }
@@ -210,6 +213,7 @@ var Game = {
     }
     function match(tile1, tile2) {
       matches++;
+      Game.score.update();
       tile1.matched = tile2.matched = true;
       if (matches === count / 2)
         Game.state.win();
@@ -253,6 +257,34 @@ var Game = {
     function disable() {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].disable();
+    }
+  },
+  init_score: function() {
+    var last_match_time, last_match_clicks, score;
+    Game.score = {reset: reset, update: update, value: get};
+    reset();
+
+    function reset() {
+      last_match_time = 0;
+      last_match_clicks = 0;
+      set(0);
+    }
+    function update() {
+      var time = Game.timer.time() - last_match_time;
+      var clicks = Game.clicks.value() - last_match_clicks;
+      add(Game.tiles.count() * 20 / (time * clicks + 1));
+      last_match_time = Game.timer.time();
+      last_match_clicks = Game.clicks.value();
+    }
+    function add(n) {
+      set(score + Math.round(n));
+    }
+    function set(n) {
+      score = n;
+      $('#score').text(score);
+    }
+    function get() {
+      return score;
     }
   },
   repaint: function() {

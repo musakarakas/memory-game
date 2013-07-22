@@ -3,9 +3,6 @@
   "end-game": "Bitir",
   "language": "Türkçe",
   "are-you-sure": "Emin misiniz?",
-  "you-win": [
-    "Tebrikler! Kazandınız!",
-    "Oyun %d tıklama ile",
-    "%d saniyede tamamlandı."],
-  "you-lose": ["Süre doldu!", "Kaybettiniz!", "%d defa tıkladınız."]
+  "you-win": "Tebrikler! %d puanla bitirdiniz.",
+  "you-lose": "Süre doldu! %d puanla kaybettiniz."
 }
