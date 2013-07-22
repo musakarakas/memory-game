@@ -273,7 +273,7 @@ var Game = {
     function update() {
       var time = Game.timer.time() - last_match_time;
       var clicks = Game.clicks.value() - last_match_clicks;
-      add(Game.tiles.count() * 20 / (time * clicks + 1));
+      add(Game.tiles.count() * 20 / (time + 1) / (clicks + 1));
       last_match_time = Game.timer.time();
       last_match_clicks = Game.clicks.value();
     }
