@@ -105,7 +105,10 @@ var Game = {
     }
     function display() {
       var $button = $('#level-up');
-      Game.state.gameover() ? Utils.enable($button) : Utils.disable($button);
+
+      if (Game.state.gameover()) $button.removeAttr('disabled')
+      else $button.attr('disabled', 'disabled');
+
       $('#level').text(level + ' x ' + level);
       var klass = level > 5 ? 'icon-th' : 'icon-th-large';
       $('#level-up i').removeClass().addClass(klass);
@@ -203,6 +206,7 @@ var Game = {
     }
   },
   init_tiles: function() {
+    var Tile = defineTileClass();
     var tiles, $tiles = $('#tiles'), count, matches = 0;
     Game.tiles = {load: load, match: match, match_found: match_found,
       reset: reset, count: get_count, disable: disable, display: display};
@@ -259,6 +263,51 @@ var Game = {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].disable();
     }
+
+    function defineTileClass() {
+      var Tile = function(id) {
+        this.init(id);
+      };
+
+      Tile.prototype = {
+        init: function(id) {
+          this.id = id;
+          this.$div = $('<div/>', {class: 'tile'});
+          this.$image = $('<img/>').appendTo(this.$div);
+          this.$div.get()[0].tile = this;
+          this.$image.attr('src', 'images/' + (id + 1) + '.png');
+          this.reset();
+        },
+        reset: function() {
+          this.matched = false;
+          this.$image.hide();
+          this.disable();
+        },
+        show: function() {
+          this.$image.show();
+          this.$div.addClass('visible');
+          this.disable();
+        },
+        hide: function() {
+          this.$image.hide();
+          this.$div.removeClass('visible');
+          this.enable();
+        },
+        display: function() {
+          this.matched ? this.show() : this.hide();
+        },
+        enable: function() {
+          this.enabled = true;
+          this.$div.addClass('enabled');
+        },
+        disable: function() {
+          this.enabled = false;
+          this.$div.removeClass('enabled');
+        }
+      };
+
+      return Tile;
+    }
   },
   init_score: function() {
     var last_match_time, last_match_clicks, score;
@@ -292,56 +341,6 @@ var Game = {
     Game.level.display();
     Game.state.display();
     Game.tiles.display();
-  }
-};
-
-var Tile = function(id) {
-  this.init(id);
-};
-
-Tile.prototype = {
-  init: function(id) {
-    this.id = id;
-    this.$div = $('<div/>', {class: 'tile'});
-    this.$image = $('<img/>').appendTo(this.$div);
-    this.$div.get()[0].tile = this;
-    this.$image.attr('src', 'images/' + (id + 1) + '.png');
-    this.reset();
-  },
-  reset: function() {
-    this.matched = false;
-    this.$image.hide();
-    this.disable();
-  },
-  show: function() {
-    this.$image.show();
-    this.$div.addClass('visible');
-    this.disable();
-  },
-  hide: function() {
-    this.$image.hide();
-    this.$div.removeClass('visible');
-    this.enable();
-  },
-  display: function() {
-    this.matched ? this.show() : this.hide();
-  },
-  enable: function() {
-    this.enabled = true;
-    this.$div.addClass('enabled');
-  },
-  disable: function() {
-    this.enabled = false;
-    this.$div.removeClass('enabled');
-  }
-};
-
-var Utils = {
-  enable: function($button) {
-    $button.removeAttr('disabled');
-  },
-  disable: function($button) {
-    $button.attr('disabled', 'disabled');
   }
 };
 
