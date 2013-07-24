@@ -321,26 +321,29 @@ $(function() {
     reset();
 
     function reset() {
-      last_match_time = 0;
+      last_match_time = now();
       last_match_clicks = 0;
       set(0);
     }
     function update() {
-      var time = Timer.time() - last_match_time;
+      var time = now() - last_match_time;
       var clicks = Clicks.value() - last_match_clicks;
-      add(Tiles.count() * 20 / (time + 1) / (clicks + 1));
-      last_match_time = Timer.time();
+      add(Tiles.count() * 20000 / (time + 1) / (clicks + 1));
+      last_match_time = now();
       last_match_clicks = Clicks.value();
     }
+    function now() {
+      return +new Date;
+    }
     function add(n) {
-      set(score + Math.round(n));
+      set(score + n);
     }
     function set(n) {
       score = n;
-      $('#score').text(score);
+      $('#score').text(get());
     }
     function get() {
-      return score;
+      return Math.round(score);
     }
   }
   function load_view() {
