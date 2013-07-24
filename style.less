@@ -32,43 +32,34 @@
       i { font-size: 6em; }
     }
     #stats div { font-size: 2.7em; }
+
+    #start-game, #end-game { bottom: 50%; right: 50%; }
+    #level-up { bottom: 50%; left: 50%; }
+    #language { top: 50%; right: 50%; }
+    #stats { top: 50%; left: 50%; }
+  }
+  &:not(.overlay) #panel {
+    #start-game, #end-game { top: 0; left: 0; }
+    #level-up { top: 25%; left: 25%; }
+    #language { top: 50%; left: 50%; }
+    #stats { top: 75%; left: 75%; }
   }
 }
 
 #window.wide {
   #tiles { .size(100%, 80%); }
   &.overlay #tiles { left: 10%; }
-  &:not(.overlay) #panel {
-    & > * { .size(22.5%, 18%); left: 81%; }
-    #start-game, #end-game { top: 1.25%; }
-    #level-up { top: 26.25%; }
-    #language { top: 51.25%; }
-    #stats { top: 76.25%; }
-  }
-  &.overlay #panel {
-    & > * { .size(35%, 28%); }
-    #start-game, #end-game { top: 10%; left: 18%; }
-    #level-up { top: 10%; left: 54%; }
-    #language { top: 55%; left: 18%; }
-    #stats { top: 55%; left: 54%; }
+  &.overlay #panel > * { .size(35%, 28%); margin: 5% 4%; }
+  &:not(.overlay) #panel > * {
+    .size(22.5%, 18%); margin: 1.25% 1%; left: 80% !important;
   }
 }
 
 #window.narrow {
   #tiles { .size(80%, 100%); }
   &.overlay #tiles { top: 10%; }
-  &:not(.overlay) #panel {
-    & > * { .size(18%, 22.5%); top: 81.25%; }
-    #start-game, #end-game { left: 1.25%; }
-    #level-up { left: 26.25%; }
-    #language { left: 51.25%; }
-    #stats { left: 76.25%; }
-  }
-  &.overlay #panel {
-    & > * { .size(28%, 35%); }
-    #start-game, #end-game { top: 18%; left: 10%; }
-    #level-up { top: 18%; left: 55%; }
-    #language { top: 54%; left: 10%; }
-    #stats { top: 54%; left: 55%; }
+  &.overlay #panel > * { .size(28%, 35%); margin: 4% 5%; }
+  &:not(.overlay) #panel > * {
+    .size(18%, 22.5%); margin: 1% 1.25%; top: 80% !important;
   }
 }
