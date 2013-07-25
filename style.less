@@ -46,20 +46,37 @@
   }
 }
 
+@r: 4/5;                      // Aspect ratio
+@space: (1-@r)/2*100%;        // Space at left or top to center content
+@obmargin: 5%;                // Overlay button margin
+@obsize: 50% - 3*@obmargin;   // Overlay button size
+@nbmargin: 1%;                // Non-overlay button margin
+@nbsize: 25% - 2*@nbmargin;   // Non-overlay button size
+
 #window.wide {
-  #tiles { .size(100%, 80%); }
-  &.overlay #tiles { left: 10%; }
-  &.overlay #panel > * { .size(35%, 28%); margin: 5% 4%; }
+  #tiles { .size(100%, @r*100%); }
+  &.overlay #tiles { left: @space; }
+  &.overlay #panel > * {
+    .size(@obsize, @r*@obsize);
+    margin: @obmargin @r*@obmargin;
+  }
   &:not(.overlay) #panel > * {
-    .size(22.5%, 18%); margin: 1.25% 1%; left: 80% !important;
+    .size(@nbsize, @r*@nbsize);
+    margin: @nbmargin @r*@nbmargin;
+    left: @r*100% !important;
   }
 }
 
 #window.narrow {
-  #tiles { .size(80%, 100%); }
-  &.overlay #tiles { top: 10%; }
-  &.overlay #panel > * { .size(28%, 35%); margin: 4% 5%; }
+  #tiles { .size(@r*100%, 100%); }
+  &.overlay #tiles { top: @space; }
+  &.overlay #panel > * {
+    .size(@r*@obsize, @obsize);
+    margin: @r*@obmargin @obmargin;
+  }
   &:not(.overlay) #panel > * {
-    .size(18%, 22.5%); margin: 1% 1.25%; top: 80% !important;
+    .size(@r*@nbsize, @nbsize);
+    margin: @r*@nbmargin @nbmargin;
+    top: @r*100% !important;
   }
 }
