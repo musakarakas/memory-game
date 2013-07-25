@@ -50,15 +50,23 @@ $(function() {
   }
   function load_state() {
     var gameover = true;
-    State = {win: win, lose: lose, gameover: is_over, display: display};
+    State = {win: win, lose: lose, gameover: is_over,
+      start_game: start_game, reset_game: reset_game, display: display};
 
     $('#start-game').click(function() {
-      start_game();
+      reset_game();
     });
     $('#end-game').click(function() {
       if (!Tiles.match_found() || window.confirm(i18n.t('are-you-sure')))
         end_game();
     });
+    function reset_game() {
+      Tiles.load();
+      Clicks.reset();
+      Score.reset();
+      Timer.reset();
+      View.repaint();
+    }
     function start_game() {
       gameover = false;
       Tiles.reset();
@@ -100,11 +108,7 @@ $(function() {
 
     function next() {
       level = (level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
-      Tiles.load();
-      Clicks.reset();
-      Score.reset();
-      Timer.reset();
-      View.repaint();
+      State.reset_game();
     }
     function get() {
       return level;
@@ -112,7 +116,7 @@ $(function() {
     function display() {
       var $button = $('#level-up');
 
-      if (State.gameover()) $button.removeAttr('disabled')
+      if (State.gameover()) $button.removeAttr('disabled');
       else $button.attr('disabled', 'disabled');
 
       $('#level').text(level + ' x ' + level);
@@ -179,7 +183,13 @@ $(function() {
       set(0);
     }
     function click(tile) {
-      if (!tile.enabled) return;
+      if (tile.matched) return;
+      if (!tile.enabled) {
+        var index = tile.$div.index();
+        State.start_game();
+        $($('.tile').get(index)).trigger('click');
+        return;
+      }
       set(count + 1);
       count % 2 === 1 ? first_click() : second_click();
       function first_click() {
