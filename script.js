@@ -10,8 +10,8 @@ $(function() {
     load_state();
     load_level();
     load_i18n();
-    load_clicks();
     load_tiles();
+    load_clicks();
     load_timer();
     load_score();
     load_view();
@@ -55,7 +55,7 @@ $(function() {
 
     $('#reset-game').click(reset_game);
     $('#end-game').click(function() {
-      if (!Tiles.match_found() || window.confirm(i18n.t('are-you-sure')))
+      if (!Tiles.match_count() || window.confirm(i18n.t('are-you-sure')))
         end_game();
     });
     function reset_game() {
@@ -72,7 +72,6 @@ $(function() {
       Clicks.reset();
       Score.reset();
       Timer.start();
-      $('#window').removeClass('overlay');
       View.repaint();
     }
     function end_game(win) {
@@ -95,7 +94,7 @@ $(function() {
       return gameover;
     }
     function display() {
-      $('#reset-game').toggleClass('invisible', !(gameover && Tiles.match_found()));
+      $('#reset-game').toggleClass('invisible', !(gameover && Tiles.match_count()));
       $('#end-game').toggleClass('invisible', gameover);
     }
   }
@@ -113,7 +112,7 @@ $(function() {
       return level;
     }
     function display() {
-      $('#level-up').toggleClass('invisible', !(State.gameover() && !Tiles.match_found()));
+      $('#level-up').toggleClass('invisible', !(State.gameover() && !Tiles.match_count()));
       $('#level').text(level + ' x ' + level);
       var klass = level > 5 ? 'icon-th' : 'icon-th-large';
       $('#level-up i').removeClass().addClass(klass);
@@ -133,6 +132,7 @@ $(function() {
   function load_timer() {
     var interval = null, time = 0, max_time = 0;
     Timer = {start: start, stop: stop, reset: reset, time: get_time};
+    var ProgressBar = load_progress_bar();
     reset();
 
     function start() {
@@ -156,14 +156,27 @@ $(function() {
     }
     function set_time(t) {
       time = t;
+      display();
+    }
+    function display() {
       $('#seconds-left').text(max_time - time);
+      ProgressBar.update();
+    }
+
+    function load_progress_bar() {
+      var $bar = $('#seconds-left').siblings('.progress-bar');
+      function update() {
+        $bar.css('left', time * 100 / max_time + '%');
+      }
+      return {update: update};
     }
   }
   function load_clicks() {
     var count = 0, $tiles = $('#tiles'), tile_to_match;
     Clicks = {reset: reset, value: get};
-
+    var ProgressBar = load_progress_bar();
     reset();
+
     $tiles.on('click', '.tile', function() {
       click(this.tile);
     });
@@ -172,7 +185,7 @@ $(function() {
     }
     function set(n) {
       count = n;
-      $('#clicks').text(count);
+      display();
     }
     function reset() {
       set(0);
@@ -180,7 +193,7 @@ $(function() {
     function click(tile) {
       if (tile.visible) return;
       if (State.gameover()) {
-        if (Tiles.match_found()) return;
+        if (Tiles.match_count()) return;
         var index = tile.$div.index();
         State.start_game();
         $($('.tile').get(index)).trigger('click');
@@ -216,17 +229,31 @@ $(function() {
         }
       }
     }
+    function display() {
+      $('#clicks').text(count);
+      ProgressBar.update();
+    }
+
+    function load_progress_bar() {
+      var $bar = $('#clicks').siblings('.progress-bar');
+      function update() {
+        var max_clicks = Tiles.count() * 2;
+        var percentage = count * 100 / max_clicks;
+        $bar.css('left', percentage + '%');
+      }
+      return {update: update};
+    }
   }
   function load_tiles() {
     var Tile = defineTileClass();
     var tiles, $tiles = $('#tiles'), count, matches = 0;
-    Tiles = {match: match, match_found: match_found,
+    Tiles = {match: match, match_count: match_count,
       reset: reset, count: get_count, disable: disable, display: display};
 
     reset();
 
-    function match_found() {
-      return matches > 0;
+    function match_count() {
+      return matches;
     }
     function match(tile1, tile2) {
       matches++;
@@ -322,6 +349,7 @@ $(function() {
   function load_score() {
     var last_match_time, last_match_clicks, score;
     Score = {reset: reset, update: update, value: get};
+    var ProgressBar = load_progress_bar();
     reset();
 
     function reset() {
@@ -344,10 +372,24 @@ $(function() {
     }
     function set(n) {
       score = n;
-      $('#score').text(get());
+      display();
     }
     function get() {
       return Math.round(score);
+    }
+    function display() {
+      $('#score').text(get());
+      ProgressBar.update();
+    }
+
+    function load_progress_bar() {
+      var $bar = $('#score').siblings('.progress-bar');
+      function update() {
+        var pairs = Tiles.count() / 2;
+        var percentage = Tiles.match_count() * 100 / pairs;
+        $bar.css({right: 100 - percentage + '%'});
+      }
+      return {update: update};
     }
   }
   function load_view() {
