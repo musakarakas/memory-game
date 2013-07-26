@@ -17,65 +17,38 @@
       &.invisible { opacity: 0; height: 0; }
       i { font-size: 4em; }
     }
+    #reset-game, #end-game, #level-up { top: 25%; left: 25%; }
+    #language { top: 50%; left: 50%; }
     #stats {
+      top: 75%; left: 75%;
       div {
         height: 25%; margin: 2%; padding: 2% 5%;
         border: 1px solid green; background: greenyellow;
         font-size: 1.6em; font-weight: bold;
-        .stat { .pull-right; margin-top: .25em; color: red; }
+        .stat { float: right; margin-top: .25em; color: red; }
       }
     }
   }
-  &.overlay #panel {
-    & > * { opacity: .8; &:hover { opacity: 1; } }
-    button {
-      font-size: 1.2em; line-height: 1.2em;
-      i { font-size: 6em; }
-    }
-    #stats div { font-size: 2.7em; }
-
-    #reset-game, #end-game, #level-up { bottom: 50%; right: 50%; }
-    #language { top: 50%; right: 50%; }
-    #stats { top: 50%; left: 50%; }
-  }
-  &:not(.overlay) #panel {
-    #reset-game, #end-game, #level-up { top: 25%; left: 25%; }
-    #language { top: 50%; left: 50%; }
-    #stats { top: 75%; left: 75%; }
-  }
 }
 
-@r: 4/5;                      // Aspect ratio
-@space: (1-@r)/2*100%;        // Space at left or top to center content
-@obmargin: 5%;                // Overlay button margin
-@obsize: 50% - 3*@obmargin;   // Overlay button size
-@nbmargin: 1%;                // Non-overlay button margin
-@nbsize: 25% - 2*@nbmargin;   // Non-overlay button size
+@ratio: 4/5;              // Aspect ratio
+@margin: 1%;              // Button margin
+@size: 25% - 2*@margin;   // Button size
 
 #window.wide {
-  #tiles { .size(100%, @r*100%); }
-  &.overlay #tiles { left: @space; }
-  &.overlay #panel > * {
-    .size(@obsize, @r*@obsize);
-    margin: @obmargin @r*@obmargin;
-  }
-  &:not(.overlay) #panel > * {
-    .size(@nbsize, @r*@nbsize);
-    margin: @nbmargin @r*@nbmargin;
-    left: @r*100% !important;
+  #tiles { .size(100%, @ratio*100%); }
+  #panel > * {
+    .size(@size, @ratio*@size);
+    margin: @margin @ratio*@margin;
+    left: @ratio*100% !important;
   }
 }
 
 #window.narrow {
-  #tiles { .size(@r*100%, 100%); }
-  &.overlay #tiles { top: @space; }
-  &.overlay #panel > * {
-    .size(@r*@obsize, @obsize);
-    margin: @r*@obmargin @obmargin;
-  }
-  &:not(.overlay) #panel > * {
-    .size(@r*@nbsize, @nbsize);
-    margin: @r*@nbmargin @nbmargin;
-    top: @r*100% !important;
+  #tiles { .size(@ratio*100%, 100%); }
+  #panel > * {
+    .size(@ratio*@size, @size);
+    margin: @ratio*@margin @margin;
+    top: @ratio*100% !important;
   }
 }
