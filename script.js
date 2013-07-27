@@ -237,7 +237,7 @@ $(function() {
     function load_progress_bar() {
       var $bar = $('#clicks').siblings('.progress-bar');
       function update() {
-        var max_clicks = Tiles.count() * 2;
+        var max_clicks = Math.round(Math.pow(Level.value(), 2.5));
         var percentage = count * 100 / max_clicks;
         $bar.css('left', percentage + '%');
       }
