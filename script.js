@@ -1,5 +1,5 @@
 $(function() {
-  var State, Tiles, Clicks, Score, Timer, View, Level;
+  var State, Tiles, Clicks, Score, Timer, Level;
   load_game();
 
   // return window.Game = {state: State, tiles: Tiles,
@@ -7,14 +7,13 @@ $(function() {
 
   function load_game() {
     load_window();
-    load_state();
     load_level();
     load_i18n();
     load_tiles();
+    load_state();
     load_clicks();
     load_timer();
     load_score();
-    load_view();
   }
   function load_window() {
     resize();
@@ -52,6 +51,7 @@ $(function() {
     var gameover = true;
     State = {gameover: is_over, End: load_end(),
       start_game: start_game, reset_game: reset_game, display: display};
+    repaint();
 
     $('#reset-game').click(reset_game);
     function reset_game() {
@@ -60,7 +60,7 @@ $(function() {
       Clicks.reset();
       Score.reset();
       Timer.reset();
-      View.repaint();
+      repaint();
     }
     function start_game() {
       gameover = false;
@@ -68,7 +68,7 @@ $(function() {
       Clicks.reset();
       Score.reset();
       Timer.start();
-      View.repaint();
+      repaint();
     }
     function is_over() {
       return gameover;
@@ -76,6 +76,11 @@ $(function() {
     function display() {
       $('#reset-game').toggleClass('invisible', !(gameover && Tiles.match_count()));
       $('#end-game').toggleClass('invisible', gameover);
+    }
+    function repaint() {
+      Level.display();
+      State.display();
+      Tiles.display();
     }
 
     function load_end() {
@@ -103,7 +108,7 @@ $(function() {
         Timer.stop();
         if (arguments.length)
           alert(i18n.t(message, {sprintf: [Score.value()]}));
-        View.repaint();
+        repaint();
       }
     }
   }
@@ -174,10 +179,10 @@ $(function() {
 
     function load_progress_bar() {
       var $bar = $('#seconds-left').siblings('.progress-bar');
+      return {update: update};
       function update() {
         $bar.css('left', time * 100 / max_time + '%');
       }
-      return {update: update};
     }
   }
   function load_clicks() {
@@ -247,11 +252,10 @@ $(function() {
 
     function load_progress_bar() {
       var $bar = $('#clicks').siblings('.progress-bar');
-      function update() {
-        var percentage = count * 100 / max_count;
-        $bar.css('left', percentage + '%');
-      }
       return {update: update};
+      function update() {
+        $bar.css('left', count * 100 / max_count + '%');
+      }
     }
   }
   function load_tiles() {
@@ -393,22 +397,12 @@ $(function() {
 
     function load_progress_bar() {
       var $bar = $('#score').siblings('.progress-bar');
+      return {update: update};
       function update() {
         var pairs = Tiles.count() / 2;
         var percentage = Tiles.match_count() * 100 / pairs;
         $bar.css({right: 100 - percentage + '%'});
       }
-      return {update: update};
-    }
-  }
-  function load_view() {
-    View = {repaint: repaint};
-    repaint();
-
-    function repaint() {
-      Level.display();
-      State.display();
-      Tiles.display();
     }
   }
 });
