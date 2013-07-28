@@ -126,7 +126,7 @@ $(function() {
       return level;
     }
     function difficulty() {
-      return Math.round(Math.pow(level, 2.5));
+      return Math.pow(level, 2.5);
     }
     function display() {
       $('#level-up').toggleClass('invisible', !(State.gameover() && !Tiles.match_count()));
@@ -147,7 +147,7 @@ $(function() {
     }
   }
   function load_timer() {
-    var interval = null, time = 0, max_time = 0;
+    var interval, start_time, end_time, max_time;
     Timer = {start: start, stop: stop, reset: reset};
     var ProgressBar = load_progress_bar();
     reset();
@@ -155,8 +155,8 @@ $(function() {
     function start() {
       reset();
       interval = setInterval(function() {
-        set_time(time + 1);
-        if (time >= max_time)
+        display();
+        if (seconds_left() <= 0)
           State.End.time_is_up();
       }, 1000);
     }
@@ -165,23 +165,30 @@ $(function() {
     }
     function reset() {
       stop();
-      max_time = Math.round(Level.difficulty() * 1.5);
-      set_time(0);
-    }
-    function set_time(t) {
-      time = t;
+      max_time = Level.difficulty() * 1500;
+      start_time = now();
+      end_time = start_time + max_time;
       display();
     }
     function display() {
-      $('#seconds-left').text(max_time - time);
+      $('#seconds-left').text(seconds_left());
       ProgressBar.update();
+    }
+    function now() {
+      return +new Date;
+    }
+    function time_passed() {
+      return now() - start_time;
+    }
+    function seconds_left() {
+      return Math.round((end_time - now()) / 1000);
     }
 
     function load_progress_bar() {
       var $bar = $('#seconds-left').siblings('.progress-bar');
       return {update: update};
       function update() {
-        $bar.css('left', time * 100 / max_time + '%');
+        $bar.css('left', time_passed() * 100 / max_time + '%');
       }
     }
   }
@@ -203,7 +210,7 @@ $(function() {
     }
     function reset() {
       set(0);
-      max_count = Level.difficulty();
+      max_count = Math.round(Level.difficulty());
     }
     function click(tile) {
       if (tile.visible) return;
