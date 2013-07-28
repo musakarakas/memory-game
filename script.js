@@ -293,20 +293,27 @@ $(function() {
 
       tiles = [];
       $tiles.empty();
+      var image_ids = random_image_id_pairs(count);
       for (var i = 0; i < count; i++) {
-        tiles[i] = new Tile(i % (count / 2));
+        tiles[i] = new Tile(image_ids[i]);
         tiles[i].$div.appendTo($tiles);
       }
-      shuffle();
 
       var tile_size = (100 / level - .4) + '%';
       $('.tile').css({'width': tile_size, 'height': tile_size});
-    }
-    function shuffle() {
-      for (var i = 0; i < count; i++) {
-        var $tile1 = $('.tile').eq(i);
-        var $tile2 = $('.tile').eq(Math.floor(Math.random() * count));
-        $tile1.after($tile2);
+
+      function random_image_id_pairs(n) {
+        var all = [], result = [];
+        for (var i = 1; i <= 32; i++) all.push(i);
+        for (var i = 0; i < n / 2; i++) {
+          var id = all.splice(Math.floor(Math.random() * all.length), 1)[0];
+          for (var j = 0; j < 2; j++) {
+            var r = Math.floor(Math.random() * result.length);
+            result.push(result[r]);
+            result[r] = id;
+          }
+        }
+        return result;
       }
     }
     function get_count() {
@@ -332,7 +339,7 @@ $(function() {
           this.$div = $('<div/>', {class: 'tile'});
           this.$image = $('<img/>').appendTo(this.$div);
           this.$div.get()[0].tile = this;
-          this.$image.attr('src', 'images/' + (id + 1) + '.png');
+          this.$image.attr('src', 'images/' + id + '.png');
           this.reset();
         },
         reset: function() {
