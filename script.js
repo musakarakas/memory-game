@@ -50,14 +50,10 @@ $(function() {
   }
   function load_state() {
     var gameover = true;
-    State = {win: win, lose: lose, gameover: is_over,
+    State = {gameover: is_over, End: load_end(),
       start_game: start_game, reset_game: reset_game, display: display};
 
     $('#reset-game').click(reset_game);
-    $('#end-game').click(function() {
-      if (!Tiles.match_count() || window.confirm(i18n.t('are-you-sure')))
-        end_game();
-    });
     function reset_game() {
       Tiles.reset();
       Tiles.disable();
@@ -74,28 +70,41 @@ $(function() {
       Timer.start();
       View.repaint();
     }
-    function end_game(win) {
-      gameover = true;
-      Timer.stop();
-      Tiles.disable();
-      if (arguments.length) {
-        var params = {sprintf: [Score.value()]};
-        alert(i18n.t(win ? 'you-win' : 'you-lose', params));
-      }
-      View.repaint();
-    }
-    function win() {
-      end_game(true);
-    }
-    function lose() {
-      end_game(false);
-    }
     function is_over() {
       return gameover;
     }
     function display() {
       $('#reset-game').toggleClass('invisible', !(gameover && Tiles.match_count()));
       $('#end-game').toggleClass('invisible', gameover);
+    }
+
+    function load_end() {
+      $('#end-game').click(bored);
+
+      return {win: win, time_is_up: time_is_up,
+        too_much_clicks: too_much_clicks, bored: bored};
+
+      function win() {
+        end_game('you-win');
+      }
+      function time_is_up() {
+        end_game('time-is-up');
+      }
+      function too_much_clicks() {
+        end_game('too-much-clicks');
+      }
+      function bored() {
+        if (!Tiles.match_count() || window.confirm(i18n.t('are-you-sure')))
+          end_game();
+      }
+      function end_game(message) {
+        if (gameover) return;
+        gameover = true;
+        Timer.stop();
+        if (arguments.length)
+          alert(i18n.t(message, {sprintf: [Score.value()]}));
+        View.repaint();
+      }
     }
   }
   function load_level() {
@@ -140,7 +149,7 @@ $(function() {
       interval = setInterval(function() {
         set_time(time + 1);
         if (time >= max_time)
-          State.lose();
+          State.End.time_is_up();
       }, 1000);
     }
     function stop() {
@@ -172,7 +181,7 @@ $(function() {
     }
   }
   function load_clicks() {
-    var count = 0, $tiles = $('#tiles'), tile_to_match;
+    var count = 0, max_count = 0, $tiles = $('#tiles'), tile_to_match;
     Clicks = {reset: reset, value: get};
     var ProgressBar = load_progress_bar();
     reset();
@@ -189,6 +198,7 @@ $(function() {
     }
     function reset() {
       set(0);
+      max_count = Math.round(Math.pow(Level.value(), 2.5));
     }
     function click(tile) {
       if (tile.visible) return;
@@ -201,6 +211,7 @@ $(function() {
       }
       set(count + 1);
       count % 2 === 1 ? first_click() : second_click();
+      if (count >= max_count) State.End.too_much_clicks();
       function first_click() {
         hide();
         tile.show();
@@ -237,8 +248,7 @@ $(function() {
     function load_progress_bar() {
       var $bar = $('#clicks').siblings('.progress-bar');
       function update() {
-        var max_clicks = Math.round(Math.pow(Level.value(), 2.5));
-        var percentage = count * 100 / max_clicks;
+        var percentage = count * 100 / max_count;
         $bar.css('left', percentage + '%');
       }
       return {update: update};
@@ -260,7 +270,7 @@ $(function() {
       Score.update();
       tile1.matched = tile2.matched = true;
       if (matches === count / 2)
-        State.win();
+        State.End.win();
     }
     function reset() {
       var level = Level.value();
@@ -291,8 +301,6 @@ $(function() {
     function display() {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].display();
-      if (State.gameover())
-        disable();
     }
     function disable() {
       for (var i = 0; i < tiles.length; i++)
@@ -332,6 +340,7 @@ $(function() {
         },
         display: function() {
           this.matched ? this.show() : this.hide();
+          if (State.gameover()) this.disable();
         },
         enable: function() {
           this.enabled = true;

@@ -3,6 +3,7 @@
   "end-game": "End Game",
   "language": "English",
   "are-you-sure": "Are you sure?",
-  "you-win": "Congratulations! You win! You scored %d points.",
-  "you-lose": "Time is up! You lose! You scored %d points."
+  "you-win": "Congratulations! You did it! Your score is %d points.",
+  "time-is-up": "You are out of time. Your score is %d points.",
+  "too-much-clicks": "You clicked too much! Your score is %d points."
 }

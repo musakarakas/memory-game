@@ -3,6 +3,7 @@
   "end-game": "Bitir",
   "language": "Türkçe",
   "are-you-sure": "Emin misiniz?",
-  "you-win": "Tebrikler! %d puanla bitirdiniz.",
-  "you-lose": "Süre doldu! %d puanla kaybettiniz."
+  "you-win": "Tebrikler! Başardınız! Puanınız: %d",
+  "time-is-up": "Süre doldu. Puanınız: %d",
+  "too-much-clicks": "Çok fazla tıkladınız. Puanınız: %d"
 }
