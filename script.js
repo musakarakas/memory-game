@@ -145,7 +145,7 @@ $(function() {
   }
   function load_timer() {
     var interval = null, time = 0, max_time = 0;
-    Timer = {start: start, stop: stop, reset: reset, time: get_time};
+    Timer = {start: start, stop: stop, reset: reset};
     var ProgressBar = load_progress_bar();
     reset();
 
@@ -164,9 +164,6 @@ $(function() {
       stop();
       max_time = Tiles.count() * 4;
       set_time(0);
-    }
-    function get_time() {
-      return time;
     }
     function set_time(t) {
       time = t;
