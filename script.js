@@ -207,16 +207,19 @@ $(function() {
     }
     function click(tile) {
       if (tile.visible) return;
-      if (State.gameover()) {
-        if (Tiles.match_count()) return;
+      if (!State.gameover()) click_to_continue();
+      else if (!Tiles.match_count()) click_to_start();
+
+      function click_to_start() {
         var index = tile.$div.index();
         State.start_game();
         $($('.tile').get(index)).trigger('click');
-        return;
       }
-      set(count + 1);
-      count % 2 === 1 ? first_click() : second_click();
-      if (count >= max_count) State.End.too_much_clicks();
+      function click_to_continue() {
+        set(count + 1);
+        count % 2 === 1 ? first_click() : second_click();
+        if (count >= max_count) State.End.too_much_clicks();
+      }
       function first_click() {
         hide();
         tile.show();
