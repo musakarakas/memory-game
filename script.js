@@ -116,7 +116,7 @@ $(function() {
     var level = 4;
     $('#level-up').click(next);
 
-    Level = {display: display, next: next, value: get};
+    Level = {display: display, next: next, value: get, difficulty: difficulty};
 
     function next() {
       level = (level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
@@ -124,6 +124,9 @@ $(function() {
     }
     function get() {
       return level;
+    }
+    function difficulty() {
+      return Math.round(Math.pow(level, 2.5));
     }
     function display() {
       $('#level-up').toggleClass('invisible', !(State.gameover() && !Tiles.match_count()));
@@ -162,7 +165,7 @@ $(function() {
     }
     function reset() {
       stop();
-      max_time = Tiles.count() * 4;
+      max_time = Math.round(Level.difficulty() * 1.5);
       set_time(0);
     }
     function set_time(t) {
@@ -200,7 +203,7 @@ $(function() {
     }
     function reset() {
       set(0);
-      max_count = Math.round(Math.pow(Level.value(), 2.5));
+      max_count = Level.difficulty();
     }
     function click(tile) {
       if (tile.visible) return;
