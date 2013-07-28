@@ -148,7 +148,7 @@ $(function() {
   }
   function load_timer() {
     var interval, start_time, end_time, max_time;
-    Timer = {start: start, stop: stop, reset: reset};
+    Timer = {start: start, stop: stop, reset: reset, time: time_passed};
     var ProgressBar = load_progress_bar();
     reset();
 
@@ -210,7 +210,7 @@ $(function() {
     }
     function reset() {
       set(0);
-      max_count = Math.round(Level.difficulty());
+      max_count = Math.round(Level.difficulty() * 1.5);
     }
     function click(tile) {
       if (tile.visible) return;
@@ -370,28 +370,17 @@ $(function() {
     }
   }
   function load_score() {
-    var last_match_time, last_match_clicks, score;
+    var score;
     Score = {reset: reset, update: update, value: get};
     var ProgressBar = load_progress_bar();
     reset();
 
     function reset() {
-      last_match_time = now();
-      last_match_clicks = 0;
       set(0);
     }
     function update() {
-      var time = now() - last_match_time;
-      var clicks = Clicks.value() - last_match_clicks;
-      add(Tiles.count() * 20000 / (time + 1) / (clicks + 1));
-      last_match_time = now();
-      last_match_clicks = Clicks.value();
-    }
-    function now() {
-      return +new Date;
-    }
-    function add(n) {
-      set(score + n);
+      var c = 10000, match_score = Math.pow(Tiles.match_count(), 3);
+      set(c * match_score * Level.difficulty() / Clicks.value() / Timer.time());
     }
     function set(n) {
       score = n;
