@@ -209,8 +209,8 @@ $(function() {
       display();
     }
     function reset() {
-      set(0);
       max_count = Math.round(Level.difficulty() * 1.5);
+      set(0);
     }
     function click(tile) {
       if (tile.visible) return;
@@ -256,12 +256,12 @@ $(function() {
       }
     }
     function display() {
-      $('#clicks').text(count);
+      $('#clicks-left').text(max_count - count);
       ProgressBar.update();
     }
 
     function load_progress_bar() {
-      var $bar = $('#clicks').siblings('.progress-bar');
+      var $bar = $('#clicks-left').siblings('.progress-bar');
       return {update: update};
       function update() {
         $bar.css('left', count * 100 / max_count + '%');
