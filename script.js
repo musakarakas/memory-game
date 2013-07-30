@@ -171,7 +171,7 @@ $(function() {
       display();
     }
     function display() {
-      $('#seconds-left').text(seconds_left());
+      $('#stats .seconds .value').text(seconds_left());
       ProgressBar.update();
     }
     function now() {
@@ -185,7 +185,7 @@ $(function() {
     }
 
     function load_progress_bar() {
-      var $bar = $('#seconds-left').siblings('.progress-bar');
+      var $bar = $('#stats .seconds .progress-bar');
       return {update: update};
       function update() {
         $bar.css('left', time_passed() * 100 / max_time + '%');
@@ -256,12 +256,12 @@ $(function() {
       }
     }
     function display() {
-      $('#clicks-left').text(max_count - count);
+      $('#stats .clicks .value').text(max_count - count);
       ProgressBar.update();
     }
 
     function load_progress_bar() {
-      var $bar = $('#clicks-left').siblings('.progress-bar');
+      var $bar = $('#stats .clicks .progress-bar');
       return {update: update};
       function update() {
         $bar.css('left', count * 100 / max_count + '%');
@@ -397,12 +397,12 @@ $(function() {
       return Math.round(score);
     }
     function display() {
-      $('#score').text(get());
+      $('#stats .score .value').text(get());
       ProgressBar.update();
     }
 
     function load_progress_bar() {
-      var $bar = $('#score').siblings('.progress-bar');
+      var $bar = $('#stats .score .progress-bar');
       return {update: update};
       function update() {
         var pairs = Tiles.count() / 2;
