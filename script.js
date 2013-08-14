@@ -220,7 +220,7 @@ $(function() {
       function click_to_start() {
         var index = tile.$div.index();
         State.start_game();
-        $($('.tile').get(index)).trigger('click');
+        $('.tile').eq(index).trigger('click');
       }
       function click_to_continue() {
         set(count + 1);
@@ -303,17 +303,8 @@ $(function() {
       $('.tile').css({'width': tile_size, 'height': tile_size});
 
       function random_image_id_pairs(n) {
-        var all = [], result = [];
-        for (var i = 1; i <= 32; i++) all.push(i);
-        for (var i = 0; i < n / 2; i++) {
-          var id = all.splice(Math.floor(Math.random() * all.length), 1)[0];
-          for (var j = 0; j < 2; j++) {
-            var r = Math.floor(Math.random() * result.length);
-            result.push(result[r]);
-            result[r] = id;
-          }
-        }
-        return result;
+        var set = _.shuffle(_.range(1, 32)).slice(0, n / 2);
+        return _.shuffle(set.concat(set));
       }
     }
     function get_count() {
