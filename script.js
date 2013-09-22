@@ -25,35 +25,38 @@ $(function () {
       set_font_size();
       function set_wide_size() {
         size = Math.min(w * r, h) * .99;
-        $('#window').css({
+        var $window = $('#window');
+        $window.css({
           'width': size / r, 'height': size,
           'margin-top': (h - size) / 2
         });
-        $('#window').removeClass('narrow');
-        $('#window').addClass('wide');
+        $window.removeClass('narrow');
+        $window.addClass('wide');
       }
 
       function set_narrow_size() {
         size = Math.min(w, h * r) * .99;
-        $('#window').css({
+        var $window = $('#window');
+        $window.css({
           'width': size, 'height': size / r,
           'margin-top': (h - size / r) / 2
         });
-        $('#window').removeClass('wide');
-        $('#window').addClass('narrow');
+        $window.removeClass('wide');
+        $window.addClass('narrow');
       }
 
       function set_font_size() {
         var font_size = Math.floor(size / 5) + '%';
-        $('body').css('font-size', font_size);
-        $('body').css('line-height', $('body').css('font-size'));
+        var $body = $('body');
+        $body.css('font-size', font_size);
+        $body.css('line-height', $body.css('font-size'));
       }
     }
   }
 
   function load_state() {
-    var gameover = true;
-    State = {gameover: is_over, End: load_end(),
+    var game_over = true;
+    State = {game_over: is_over, End: load_end(),
       start_game: start_game, reset_game: reset_game, display: display};
     repaint();
 
@@ -68,7 +71,7 @@ $(function () {
     }
 
     function start_game() {
-      gameover = false;
+      game_over = false;
       Tiles.reset();
       Clicks.reset();
       Score.reset();
@@ -77,12 +80,12 @@ $(function () {
     }
 
     function is_over() {
-      return gameover;
+      return game_over;
     }
 
     function display() {
-      $('#reset-game').toggleClass('invisible', !(gameover && Tiles.match_count()));
-      $('#end-game').toggleClass('invisible', gameover);
+      $('#reset-game').toggleClass('invisible', !(game_over && Tiles.match_count()));
+      $('#end-game').toggleClass('invisible', game_over);
     }
 
     function repaint() {
@@ -115,8 +118,8 @@ $(function () {
       }
 
       function end_game(message) {
-        if (gameover) return;
-        gameover = true;
+        if (game_over) return;
+        game_over = true;
         Timer.stop();
         if (arguments.length)
           alert(i18n.t(message, {sprintf: [Score.value()]}));
@@ -145,10 +148,11 @@ $(function () {
     }
 
     function display() {
-      $('#level-up').toggleClass('invisible', !(State.gameover() && !Tiles.match_count()));
+      var $level_up = $('#level-up');
+      $level_up.toggleClass('invisible', !(State.game_over() && !Tiles.match_count()));
       $('#level').text(level + ' x ' + level);
       var klass = level > 5 ? 'icon-th' : 'icon-th-large';
-      $('#level-up i').removeClass().addClass(klass);
+      $level_up.find('i').removeClass().addClass(klass);
     }
   }
 
@@ -192,7 +196,7 @@ $(function () {
     }
 
     function display() {
-      $('#stats .seconds .value').text(seconds_left());
+      $('#stats').find('.seconds .value').text(seconds_left());
       ProgressBar.update();
     }
 
@@ -209,7 +213,7 @@ $(function () {
     }
 
     function load_progress_bar() {
-      var $bar = $('#stats .seconds .progress-bar');
+      var $bar = $('#stats').find('.seconds .progress-bar');
       return {update: update};
       function update() {
         $bar.css('left', time_passed() * 100 / max_time + '%');
@@ -242,7 +246,7 @@ $(function () {
 
     function click(tile) {
       if (tile.visible) return;
-      if (!State.gameover()) click_to_continue();
+      if (!State.game_over()) click_to_continue();
       else if (!Tiles.match_count()) click_to_start();
 
       function click_to_start() {
@@ -289,12 +293,12 @@ $(function () {
     }
 
     function display() {
-      $('#stats .clicks .value').text(max_count - count);
+      $('#stats').find('.clicks .value').text(max_count - count);
       ProgressBar.update();
     }
 
     function load_progress_bar() {
-      var $bar = $('#stats .clicks .progress-bar');
+      var $bar = $('#stats').find('.clicks .progress-bar');
       return {update: update};
       function update() {
         $bar.css('left', count * 100 / max_count + '%');
@@ -391,7 +395,7 @@ $(function () {
         },
         display: function () {
           this.matched ? this.show() : this.hide();
-          if (State.gameover()) this.disable();
+          if (State.game_over()) this.disable();
         },
         enable: function () {
           this.enabled = true;
@@ -432,12 +436,12 @@ $(function () {
     }
 
     function display() {
-      $('#stats .score .value').text(get());
+      $('#stats').find('.score .value').text(get());
       ProgressBar.update();
     }
 
     function load_progress_bar() {
-      var $bar = $('#stats .score .progress-bar');
+      var $bar = $('#stats').find('.score .progress-bar');
       return {update: update};
       function update() {
         var pairs = Tiles.count() / 2;
