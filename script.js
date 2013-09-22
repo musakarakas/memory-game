@@ -303,7 +303,7 @@ $(function() {
       $('.tile').css({'width': tile_size, 'height': tile_size});
 
       function random_image_id_pairs(n) {
-        var set = _.shuffle(_.range(1, 32)).slice(0, n / 2);
+        var set = _.sample(_.range(1, 33), n / 2);
         return _.shuffle(set.concat(set));
       }
     }
