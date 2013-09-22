@@ -5,7 +5,9 @@
   #tiles .tile {
     float: left; margin: .2%;
     background: #1abc9c;
-    &.enabled { background: #2ecc71; &:hover { background: #58d68d; } }
+    &.enabled { background: #2ecc71;
+      &:hover { background: #58d68d; }
+    }
     &.visible { background: #ec7063; }
     img { .size(100%, 100%); }
   }
@@ -28,7 +30,7 @@
         font-size: 1.6em; font-weight: bold;
         .value { float: right; margin-top: .25em; color: green; }
         .progress-bar {
-          position: absolute; 
+          position: absolute;
           top: 0; right: 0; bottom: 0; left: 0;
           background-color: black;
           z-index: -1;

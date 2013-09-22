@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
   var State, Tiles, Clicks, Score, Timer, Level;
   load_game();
 
@@ -15,6 +15,7 @@ $(function() {
     load_timer();
     load_score();
   }
+
   function load_window() {
     resize();
     $(window).resize(resize);
@@ -31,6 +32,7 @@ $(function() {
         $('#window').removeClass('narrow');
         $('#window').addClass('wide');
       }
+
       function set_narrow_size() {
         size = Math.min(w, h * r) * .99;
         $('#window').css({
@@ -40,6 +42,7 @@ $(function() {
         $('#window').removeClass('wide');
         $('#window').addClass('narrow');
       }
+
       function set_font_size() {
         var font_size = Math.floor(size / 5) + '%';
         $('body').css('font-size', font_size);
@@ -47,6 +50,7 @@ $(function() {
       }
     }
   }
+
   function load_state() {
     var gameover = true;
     State = {gameover: is_over, End: load_end(),
@@ -62,6 +66,7 @@ $(function() {
       Timer.reset();
       repaint();
     }
+
     function start_game() {
       gameover = false;
       Tiles.reset();
@@ -70,13 +75,16 @@ $(function() {
       Timer.start();
       repaint();
     }
+
     function is_over() {
       return gameover;
     }
+
     function display() {
       $('#reset-game').toggleClass('invisible', !(gameover && Tiles.match_count()));
       $('#end-game').toggleClass('invisible', gameover);
     }
+
     function repaint() {
       Level.display();
       State.display();
@@ -92,16 +100,20 @@ $(function() {
       function win() {
         end_game('you-win');
       }
+
       function time_is_up() {
         end_game('time-is-up');
       }
+
       function too_much_clicks() {
         end_game('too-much-clicks');
       }
+
       function bored() {
         if (!Tiles.match_count() || window.confirm(i18n.t('are-you-sure')))
           end_game();
       }
+
       function end_game(message) {
         if (gameover) return;
         gameover = true;
@@ -112,6 +124,7 @@ $(function() {
       }
     }
   }
+
   function load_level() {
     var level = 4;
     $('#level-up').click(next);
@@ -122,12 +135,15 @@ $(function() {
       level = (level - 2) % 6 + 3; // 4 -> 5 -> 6 -> 7 -> 8 -> 3 -> 4
       State.reset_game();
     }
+
     function get() {
       return level;
     }
+
     function difficulty() {
       return Math.pow(level, 2.5);
     }
+
     function display() {
       $('#level-up').toggleClass('invisible', !(State.gameover() && !Tiles.match_count()));
       $('#level').text(level + ' x ' + level);
@@ -135,17 +151,19 @@ $(function() {
       $('#level-up i').removeClass().addClass(klass);
     }
   }
+
   function load_i18n() {
     set_language();
     $('#language').click(set_language);
     function set_language() {
       var lng = i18n.lng() === 'en' ? 'tr' : 'en';
       var options = {lng: lng, fallbackLng: 'en', postProcess: 'sprintf'};
-      i18n.init(options, function() {
+      i18n.init(options, function () {
         $('body').i18n();
       });
     }
   }
+
   function load_timer() {
     var interval, start_time, end_time, max_time;
     Timer = {start: start, stop: stop, reset: reset, time: time_passed};
@@ -154,15 +172,17 @@ $(function() {
 
     function start() {
       reset();
-      interval = setInterval(function() {
+      interval = setInterval(function () {
         display();
         if (seconds_left() <= 0)
           State.End.time_is_up();
       }, 1000);
     }
+
     function stop() {
       clearInterval(interval);
     }
+
     function reset() {
       stop();
       max_time = Level.difficulty() * 1500;
@@ -170,16 +190,20 @@ $(function() {
       end_time = start_time + max_time;
       display();
     }
+
     function display() {
       $('#stats .seconds .value').text(seconds_left());
       ProgressBar.update();
     }
+
     function now() {
       return +new Date;
     }
+
     function time_passed() {
       return now() - start_time;
     }
+
     function seconds_left() {
       return Math.round((end_time - now()) / 1000);
     }
@@ -192,26 +216,30 @@ $(function() {
       }
     }
   }
+
   function load_clicks() {
     var count = 0, max_count = 0, $tiles = $('#tiles'), tile_to_match;
     Clicks = {reset: reset, value: get};
     var ProgressBar = load_progress_bar();
     reset();
 
-    $tiles.on('click', '.tile', function() {
+    $tiles.on('click', '.tile', function () {
       click(this.tile);
     });
     function get() {
       return count;
     }
+
     function set(n) {
       count = n;
       display();
     }
+
     function reset() {
       max_count = Math.round(Level.difficulty() * 1.5);
       set(0);
     }
+
     function click(tile) {
       if (tile.visible) return;
       if (!State.gameover()) click_to_continue();
@@ -222,16 +250,19 @@ $(function() {
         State.start_game();
         $('.tile').eq(index).trigger('click');
       }
+
       function click_to_continue() {
         set(count + 1);
         count % 2 === 1 ? first_click() : second_click();
         if (count >= max_count) State.End.too_much_clicks();
       }
+
       function first_click() {
         hide();
         tile.show();
         tile_to_match = tile;
       }
+
       function second_click() {
         tile.show();
         if (tile.id === tile_to_match.id)
@@ -239,10 +270,11 @@ $(function() {
         else
           hide(tile_to_match, tile);
       }
+
       function hide(first_tile, second_tile) {
         var timeout;
         if (arguments.length) {
-          $tiles.on('hide', function() {
+          $tiles.on('hide', function () {
             first_tile.display();
             second_tile.display();
             clearTimeout(timeout);
@@ -255,6 +287,7 @@ $(function() {
         }
       }
     }
+
     function display() {
       $('#stats .clicks .value').text(max_count - count);
       ProgressBar.update();
@@ -268,6 +301,7 @@ $(function() {
       }
     }
   }
+
   function load_tiles() {
     var Tile = defineTileClass();
     var tiles, $tiles = $('#tiles'), count, matches = 0;
@@ -279,6 +313,7 @@ $(function() {
     function match_count() {
       return matches;
     }
+
     function match(tile1, tile2) {
       matches++;
       Score.update();
@@ -286,6 +321,7 @@ $(function() {
       if (matches === count / 2)
         State.End.win();
     }
+
     function reset() {
       var level = Level.value();
       count = Math.pow(level, 2) - (level % 2);
@@ -307,25 +343,28 @@ $(function() {
         return _.shuffle(set.concat(set));
       }
     }
+
     function get_count() {
       return count;
     }
+
     function display() {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].display();
     }
+
     function disable() {
       for (var i = 0; i < tiles.length; i++)
         tiles[i].disable();
     }
 
     function defineTileClass() {
-      var Tile = function(id) {
+      var Tile = function (id) {
         this.init(id);
       };
 
       Tile.prototype = {
-        init: function(id) {
+        init: function (id) {
           this.id = id;
           this.$div = $('<div/>', {class: 'tile'});
           this.$image = $('<img/>').appendTo(this.$div);
@@ -333,32 +372,32 @@ $(function() {
           this.$image.attr('src', 'images/' + id + '.png');
           this.reset();
         },
-        reset: function() {
+        reset: function () {
           this.matched = false;
           this.hide();
           this.enable();
         },
-        show: function() {
+        show: function () {
           this.$image.show();
           this.visible = true;
           this.$div.addClass('visible');
           this.disable();
         },
-        hide: function() {
+        hide: function () {
           this.$image.hide();
           this.visible = false;
           this.$div.removeClass('visible');
           this.enable();
         },
-        display: function() {
+        display: function () {
           this.matched ? this.show() : this.hide();
           if (State.gameover()) this.disable();
         },
-        enable: function() {
+        enable: function () {
           this.enabled = true;
           this.$div.addClass('enabled');
         },
-        disable: function() {
+        disable: function () {
           this.enabled = false;
           this.$div.removeClass('enabled');
         }
@@ -367,6 +406,7 @@ $(function() {
       return Tile;
     }
   }
+
   function load_score() {
     var score;
     Score = {reset: reset, update: update, value: get};
@@ -376,17 +416,21 @@ $(function() {
     function reset() {
       set(0);
     }
+
     function update() {
       var c = 10000, match_score = Math.pow(Tiles.match_count(), 3);
       set(c * match_score * Level.difficulty() / Clicks.value() / Timer.time());
     }
+
     function set(n) {
       score = n;
       display();
     }
+
     function get() {
       return Math.round(score);
     }
+
     function display() {
       $('#stats .score .value').text(get());
       ProgressBar.update();
